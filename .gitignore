@@ -1,0 +1,29 @@
+# Environment & secrets
+.env
+.env.local
+*.env
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Foundry build artifacts
+out/
+cache/
+broadcast/
+
+# Foundry dependencies (restore via: forge install)
+SmartContract/lib/
+
+# Bun
+.bun/
+
+# OS/editor junk
+.DS_Store
+*.log
+*:Zone.Identifier
