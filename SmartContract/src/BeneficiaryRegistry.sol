@@ -2,10 +2,11 @@
 pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /// @title BeneficiaryRegistry
 /// @notice Daftar penerima bansos terverifikasi — mendukung individu maupun kelompok/lembaga
-contract BeneficiaryRegistry is Ownable {
+contract BeneficiaryRegistry is Ownable2Step {
     enum BeneficiaryType { Individual, Group }
     enum BeneficiaryStatus { Pending, Verified, Rejected, Suspended }
 
