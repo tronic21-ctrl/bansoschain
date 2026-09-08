@@ -27,3 +27,7 @@ SmartContract/lib/
 .DS_Store
 *.log
 *:Zone.Identifier
+
+# Ponder (indexer)
+ponder/.ponder/
+ponder/generated/
