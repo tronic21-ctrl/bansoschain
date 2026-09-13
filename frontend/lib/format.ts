@@ -11,6 +11,7 @@ export function formatTimestamp(unixSeconds: number): string {
 
 export function formatAmount(weiString: string): string {
   const wei = BigInt(weiString);
-  const whole = wei / 10n ** 18n;
+  const divisor = BigInt(10) ** BigInt(18);
+  const whole = wei / divisor;
   return `${whole.toString()} mDANA`;
 }
