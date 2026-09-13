@@ -32,12 +32,21 @@ ponder.on("DisbursementPool:ProgramDibuat", async ({ event, context }) => {
 });
 
 ponder.on("DisbursementPool:PencairanDisetujui", async ({ event, context }) => {
-  await context.db.insert(approvals).values({
-    id: `${event.args.programId}-${event.args.idHash}`,
-    programId: event.args.programId,
-    idHash: event.args.idHash,
-    approvedAt: event.args.approvedAt,
-  });
+  try {
+    await context.db.insert(approvals).values({
+      id: `${event.args.programId}-${event.args.idHash}`,
+      programId: event.args.programId,
+      idHash: event.args.idHash,
+      approvedAt: event.args.approvedAt,
+    });
+  } catch (err) {
+    // approval berulang buat pasangan programId+idHash yang sama —
+    // sisa dari bug lama ai-verify (udah difix), bukan error baru.
+    // Event kedua dst di-skip, bukan bikin indexer crash.
+    if (!(err instanceof Error) || !err.name.includes("UniqueConstraint")) {
+      throw err;
+    }
+  }
 });
 
 ponder.on("DisbursementPool:DanaDicairkan", async ({ event, context }) => {
