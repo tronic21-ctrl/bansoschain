@@ -37,6 +37,124 @@ export type AuditTrailData = {
   disputess: { items: Dispute[] };
 };
 
+export const FALLBACK_AUDIT_DATA: AuditTrailData = {
+  beneficiariess: {
+    items: [
+      {
+        idHash: "0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Verified",
+        registeredAt: "1725860000",
+        updatedAt: "1725860500",
+      },
+      {
+        idHash: "0x43ae79592721a744efb4c7cbb5e0488835b53dc475b6829e0615e643e529ac1f",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Verified",
+        registeredAt: "1725860100",
+        updatedAt: "1725860600",
+      },
+      {
+        idHash: "0x9ddff4fda21b48fda19a5d406df8ead0169054544d7326ec81596869c5c47e41",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Verified",
+        registeredAt: "1725860200",
+        updatedAt: "1725860700",
+      },
+      {
+        idHash: "0xcf566bef005aeb24167fd63d61275661164b47a0952d2ae3e0ba08ff6327a1ca",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Verified",
+        registeredAt: "1725860300",
+        updatedAt: "1725860800",
+      },
+      {
+        idHash: "0xdb6361c6b9e9ce57966f96f805a6b92e0f75a6b0decc342e4b92da5e748fe81d",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Verified",
+        registeredAt: "1725860400",
+        updatedAt: "1725860900",
+      },
+      {
+        idHash: "0xfc445fa1c8ffde2b5fc4afcc643049ca18da13689effe260408d82366c0a3b61",
+        registeredBy: "0xfc1A156Cd9eEadd74F0Cbab57dA08b46779efae7",
+        btype: "Individual",
+        status: "Rejected",
+        registeredAt: "1725860500",
+        updatedAt: "1725861000",
+      },
+    ],
+  },
+  programss: {
+    items: [
+      {
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        dtype: "LumpSum",
+        amountPerBeneficiary: "100000000000000000000",
+        createdAt: "1725850000",
+      },
+    ],
+  },
+  approvalss: {
+    items: [
+      {
+        id: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab-0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744",
+        approvedAt: "1725860500",
+      },
+      {
+        id: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab-0x43ae79592721a744efb4c7cbb5e0488835b53dc475b6829e0615e643e529ac1f",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0x43ae79592721a744efb4c7cbb5e0488835b53dc475b6829e0615e643e529ac1f",
+        approvedAt: "1725860600",
+      },
+      {
+        id: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab-0x9ddff4fda21b48fda19a5d406df8ead0169054544d7326ec81596869c5c47e41",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0x9ddff4fda21b48fda19a5d406df8ead0169054544d7326ec81596869c5c47e41",
+        approvedAt: "1725860700",
+      },
+      {
+        id: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab-0xcf566bef005aeb24167fd63d61275661164b47a0952d2ae3e0ba08ff6327a1ca",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0xcf566bef005aeb24167fd63d61275661164b47a0952d2ae3e0ba08ff6327a1ca",
+        approvedAt: "1725860800",
+      },
+      {
+        id: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab-0xdb6361c6b9e9ce57966f96f805a6b92e0f75a6b0decc342e4b92da5e748fe81d",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0xdb6361c6b9e9ce57966f96f805a6b92e0f75a6b0decc342e4b92da5e748fe81d",
+        approvedAt: "1725860900",
+      },
+    ],
+  },
+  disbursementss: {
+    items: [
+      {
+        id: "disb-0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744",
+        programId: "0xb34b13363632b775bf627be8a9d2f1cd420163080d4f36fdcef12771c1d350ab",
+        idHash: "0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744",
+        amount: "100000000000000000000",
+        timestamp: "1725947160",
+      },
+    ],
+  },
+  disputess: {
+    items: [],
+  },
+};
+
 export async function fetchAuditTrail(): Promise<AuditTrailData> {
-  return ponderClient.request<AuditTrailData>(AUDIT_TRAIL_QUERY);
+  try {
+    return await ponderClient.request<AuditTrailData>(AUDIT_TRAIL_QUERY);
+  } catch (err) {
+    console.warn("Ponder indexer offline/unreachable, fallback ke snapshot data on-chain:", err);
+    return FALLBACK_AUDIT_DATA;
+  }
 }
