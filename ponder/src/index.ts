@@ -9,6 +9,7 @@ ponder.on("BeneficiaryRegistry:PenerimaDiusulkan", async ({ event, context }) =>
     status: "Pending",
     registeredAt: event.block.timestamp,
     updatedAt: event.block.timestamp,
+    txHash: event.transaction.hash,
   });
 });
 
@@ -38,6 +39,7 @@ ponder.on("DisbursementPool:PencairanDisetujui", async ({ event, context }) => {
       programId: event.args.programId,
       idHash: event.args.idHash,
       approvedAt: event.args.approvedAt,
+      txHash: event.transaction.hash,
     });
   } catch (err) {
     // approval berulang buat pasangan programId+idHash yang sama —
@@ -56,6 +58,7 @@ ponder.on("DisbursementPool:DanaDicairkan", async ({ event, context }) => {
     idHash: event.args.idHash,
     amount: event.args.amount,
     timestamp: event.args.timestamp,
+    txHash: event.transaction.hash,
   });
 });
 
@@ -67,5 +70,6 @@ ponder.on("DisbursementPool:SanggahanDiajukan", async ({ event, context }) => {
     pelapor: event.args.pelapor,
     alasanURI: event.args.alasanURI,
     timestamp: event.block.timestamp,
+    txHash: event.transaction.hash,
   });
 });

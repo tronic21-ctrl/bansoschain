@@ -183,12 +183,34 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
       )}
 
       <ol className="space-y-2 font-mono text-sm">
-        <li>→ Diajukan</li>
-        {row.approvedAt && <li>→ Disetujui: {formatTimestamp(row.approvedAt)}</li>}
-        {row.disbursedAt && <li>→ Dana Cair: {formatTimestamp(row.disbursedAt)}</li>}
-                {row.disputes.map((d, i) => (
+        <li>
+          → Diajukan{" "}
+          <a href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
+            (verifikasi)
+          </a>
+        </li>
+        {row.approvedAt && (
+          <li>
+            → Disetujui: {formatTimestamp(row.approvedAt)}{" "}
+            <a href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
+              (verifikasi)
+            </a>
+          </li>
+        )}
+        {row.disbursedAt && (
+          <li>
+            → Dana Cair: {formatTimestamp(row.disbursedAt)}{" "}
+            <a href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
+              (verifikasi)
+            </a>
+          </li>
+        )}
+        {row.disputes.map((d, i) => (
           <li key={i} className="text-accent-rejected">
-            → Disanggah oleh {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}
+            → Disanggah oleh {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}{" "}
+            <a href={`https://testnet.bscscan.com/tx/${d.txHash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+              (verifikasi)
+            </a>
           </li>
         ))}
       </ol>

@@ -11,6 +11,7 @@ export type DisputeRecord = {
   pelapor: string;
   alasanURI: string;
   timestamp: number;
+  txHash: string;
 };
 
 export type AuditRow = {
@@ -19,8 +20,11 @@ export type AuditRow = {
   registeredBy: string;
   status: DisplayStatus;
   amountPerBeneficiary: string | null;
+  registeredTxHash: string;
   approvedAt: number | null;
+  approvedTxHash: string | null;
   disbursedAt: number | null;
+  disbursedTxHash: string | null;
   disputes: DisputeRecord[];
 };
 
@@ -34,7 +38,7 @@ export function buildAuditRows(data: AuditTrailData): AuditRow[] {
   const disputesByIdHash = new Map<string, DisputeRecord[]>();
   for (const d of data.disputess.items) {
     const list = disputesByIdHash.get(d.idHash) ?? [];
-    list.push({ pelapor: d.pelapor, alasanURI: d.alasanURI, timestamp: Number(d.timestamp) });
+    list.push({ pelapor: d.pelapor, alasanURI: d.alasanURI, timestamp: Number(d.timestamp), txHash: d.txHash });
     disputesByIdHash.set(d.idHash, list);
   }
 
@@ -60,8 +64,11 @@ export function buildAuditRows(data: AuditTrailData): AuditRow[] {
       registeredBy: b.registeredBy,
       status,
       amountPerBeneficiary: program?.amountPerBeneficiary ?? null,
+      registeredTxHash: b.txHash,
       approvedAt: approval ? Number(approval.approvedAt) : null,
+      approvedTxHash: approval?.txHash ?? null,
       disbursedAt: disbursement ? Number(disbursement.timestamp) : null,
+      disbursedTxHash: disbursement?.txHash ?? null,
       disputes: disputesByIdHash.get(b.idHash) ?? [],
     };
   });
