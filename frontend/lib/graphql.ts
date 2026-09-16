@@ -150,11 +150,19 @@ export const FALLBACK_AUDIT_DATA: AuditTrailData = {
   },
 };
 
-export async function fetchAuditTrail(): Promise<AuditTrailData> {
+export type IndexerSource = "live" | "fallback";
+
+export type FetchResult = {
+  data: AuditTrailData;
+  source: IndexerSource;
+};
+
+export async function fetchAuditTrail(): Promise<FetchResult> {
   try {
-    return await ponderClient.request<AuditTrailData>(AUDIT_TRAIL_QUERY);
+    const data = await ponderClient.request<AuditTrailData>(AUDIT_TRAIL_QUERY);
+    return { data, source: "live" };
   } catch (err) {
     console.warn("Ponder indexer offline/unreachable, fallback ke snapshot data on-chain:", err);
-    return FALLBACK_AUDIT_DATA;
+    return { data: FALLBACK_AUDIT_DATA, source: "fallback" };
   }
 }

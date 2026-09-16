@@ -84,6 +84,58 @@ function DisputeForm({ row }: { row: AuditRow }) {
   );
 }
 
+function IndexerBadge({ source }: { source: "live" | "fallback" }) {
+  if (source === "live") {
+    return (
+      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent-verified">
+        <span className="h-1.5 w-1.5 rounded-full bg-accent-verified" />
+        Live
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50"
+      title="Indexer tidak terjangkau — ini data cadangan, bukan data real-time"
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
+      Demo Mode — data cadangan
+    </span>
+  );
+}
+
+function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
+  const { data: program } = useReadContract({
+    address: POOL,
+    abi: disbursementPoolAbi,
+    functionName: "programs",
+    args: [programId],
+  });
+
+  if (!program) return null;
+
+  const totalCap = program[3];
+  const totalDisbursed = program[4];
+  const active = program[7];
+  const pct = totalCap > 0n ? Number((totalDisbursed * 100n) / totalCap) : 0;
+
+  return (
+    <div className="border border-border p-4 space-y-2">
+      <div className="flex items-center justify-between font-mono text-sm">
+        <span className="text-foreground/60">
+          Program {shortenHex(programId)}{!active && " (nonaktif)"}
+        </span>
+        <span>
+          {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
+        </span>
+      </div>
+      <div className="h-1.5 w-full bg-border">
+        <div className="h-1.5 bg-accent-verified" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
   const { data: onchain } = useReadContract({
     address: REGISTRY,
@@ -119,7 +171,10 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
         </button>
       </div>
 
-      <div className="font-mono text-sm text-foreground/70">{row.idHash}</div>
+      <div className="space-y-1 font-mono text-sm text-foreground/70">
+        <div>{row.idHash}</div>
+        {onchain?.[1] && <div>Wallet: {onchain[1]}</div>}
+      </div>
 
       {proof && (
         <pre className="whitespace-pre-wrap font-serif text-base leading-relaxed border-l-2 border-border pl-4">
@@ -163,17 +218,20 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
 export default function Home() {
   const [selected, setSelected] = useState<AuditRow | null>(null);
 
-  const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error } = useQuery({
     queryKey: ["audit-trail"],
     queryFn: fetchAuditTrail,
-    select: buildAuditRows,
+    select: (result) => ({ rows: buildAuditRows(result.data), source: result.source }),
     refetchInterval: 15_000,
   });
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl">BanSosChain</h1>
+            <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h1 className="font-serif text-2xl">BanSosChain</h1>
+          {data && <IndexerBadge source={data.source} />}
+        </div>
         <ConnectButton />
       </div>
 
@@ -182,7 +240,11 @@ export default function Home() {
 
       {data && (
         <>
-          <SummaryStrip rows={data} />
+          <SummaryStrip rows={data.rows} />
+
+          {[...new Set(data.rows.map((r) => r.programId).filter(Boolean))].map((pid) => (
+            <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
+          ))}
 
           <table className="w-full border border-border border-t-0 font-mono text-sm">
             <thead>
@@ -193,7 +255,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {data.map((row) => (
+              {data.rows.map((row) => (
                 <tr
                   key={row.idHash}
                   onClick={() => setSelected(row)}

@@ -27,7 +27,7 @@ export const disbursementPoolAbi = [
     ],
     outputs: [],
   },
-  {
+    {
     type: "function",
     name: "ajukanSanggahan",
     stateMutability: "nonpayable",
@@ -37,5 +37,21 @@ export const disbursementPoolAbi = [
       { name: "alasanURI", type: "string" },
     ],
     outputs: [],
+  },
+  {
+    type: "function",
+    name: "programs",
+    stateMutability: "view",
+    inputs: [{ name: "programId", type: "bytes32" }],
+    outputs: [
+      { name: "dtype", type: "uint8" },
+      { name: "amountPerBeneficiary", type: "uint256" },
+      { name: "periodInterval", type: "uint256" },
+      { name: "totalCap", type: "uint256" },
+      { name: "totalDisbursed", type: "uint256" },
+      { name: "maxPerTransaction", type: "uint256" },
+      { name: "token", type: "address" },
+      { name: "active", type: "bool" },
+    ],
   },
 ] as const;
