@@ -42,10 +42,17 @@ function RegisterForm() {
             <option value="1">Group</option>
           </select>
         </div>
-        <div>
+      <div>
           <label className={labelCls}>Metadata URI</label>
-          <input value={metadataURI} onChange={(e) => setMetadataURI(e.target.value)} placeholder="https://…" className={inputCls} />
+          <textarea
+            value={metadataURI}
+            onChange={(e) => setMetadataURI(e.target.value.replace(/\n/g, ""))}
+            placeholder="https://…"
+            rows={2}
+            className={`${inputCls} resize-y break-all`}
+          />
         </div>
+      </div>
         <button
           disabled={!idHash || !wallet || !metadataURI || isPending || isConfirming}
           onClick={() => writeContract({ address: REGISTRY, abi: beneficiaryRegistryAbi, functionName: "usulkanPenerima", args: [idHash as `0x${string}`, wallet as `0x${string}`, Number(btype), metadataURI] })}
