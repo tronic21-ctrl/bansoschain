@@ -1,4 +1,36 @@
 export const beneficiaryRegistryAbi = [
+  { type: "error", name: "BukanVerifier", inputs: [] },
+  { type: "error", name: "PenerimaSudahTerdaftar", inputs: [] },
+  { type: "error", name: "PenerimaTidakDitemukan", inputs: [] },
+  {
+    type: "function",
+    name: "isVerifier",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "usulkanPenerima",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "idHash", type: "bytes32" },
+      { name: "wallet", type: "address" },
+      { name: "btype", type: "uint8" },
+      { name: "metadataURI", type: "string" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "perbaruiStatus",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "idHash", type: "bytes32" },
+      { name: "status", type: "uint8" },
+    ],
+    outputs: [],
+  },
   {
     type: "function",
     name: "beneficiaries",
@@ -17,6 +49,14 @@ export const beneficiaryRegistryAbi = [
 ] as const;
 
 export const disbursementPoolAbi = [
+  { type: "error", name: "ProgramTidakAktif", inputs: [] },
+  { type: "error", name: "BukanEligible", inputs: [] },
+  { type: "error", name: "BelumWaktunya", inputs: [] },
+  { type: "error", name: "SudahDiklaim", inputs: [] },
+  { type: "error", name: "CapTerlampaui", inputs: [] },
+  { type: "error", name: "MasihMasaSanggah", inputs: [] },
+  { type: "error", name: "LewatBatasNominal", inputs: [] },
+  { type: "error", name: "BelumDisetujui", inputs: [] },
   {
     type: "function",
     name: "cairkan",
@@ -27,7 +67,7 @@ export const disbursementPoolAbi = [
     ],
     outputs: [],
   },
-    {
+  {
     type: "function",
     name: "ajukanSanggahan",
     stateMutability: "nonpayable",

@@ -6,6 +6,7 @@
   --border: #d6d6d0;
   --accent-verified: #1f6e5c;
   --accent-rejected: #a8402f;
+  --accent-warning: #96691c;
 }
 
 @theme inline {
@@ -14,6 +15,7 @@
   --color-border: var(--border);
   --color-accent-verified: var(--accent-verified);
   --color-accent-rejected: var(--accent-rejected);
+  --color-accent-warning: var(--accent-warning);
   --font-sans: var(--font-source-serif), ui-serif, Georgia, Cambria, serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }

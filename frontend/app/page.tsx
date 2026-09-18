@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
+import {
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { fetchAuditTrail } from "@/lib/graphql";
+import { parseContractError, useWrongNetwork } from "@/lib/web3-helpers";
 import { buildAuditRows, STATUS_LABEL, STATUS_COLOR, type AuditRow } from "@/lib/audit";
 import { beneficiaryRegistryAbi, disbursementPoolAbi } from "@/lib/abi";
 import { shortenHex, formatTimestamp, formatAmount } from "@/lib/format";
@@ -13,9 +19,53 @@ import { PROOF_URL_OVERRIDES } from "@/lib/proof-overrides";
 const REGISTRY = process.env.NEXT_PUBLIC_BENEFICIARY_REGISTRY_ADDRESS as `0x${string}`;
 const POOL = process.env.NEXT_PUBLIC_DISBURSEMENT_POOL_ADDRESS as `0x${string}`;
 
+function AdminLink() {
+  const { address, isConnected } = useAccount();
+  const { data: isVerifierWallet } = useReadContract({
+    address: REGISTRY,
+    abi: beneficiaryRegistryAbi,
+    functionName: "isVerifier",
+    args: [address ?? "0x0000000000000000000000000000000000000000"],
+    query: { enabled: isConnected && Boolean(address) },
+  });
+
+  if (!isConnected || !isVerifierWallet) return null;
+
+  return (
+    <a
+      href="/admin"
+      className="border border-border px-3 py-1.5 font-mono text-xs hover:bg-foreground hover:text-background transition-colors"
+    >
+      Panel Admin →
+    </a>
+  );
+}
+
 function ConnectButton() {
   const { open } = useAppKit();
-  const { address, isConnected } = useAppKitAccount();
+  const { address, isConnected } = useAccount();
+  const { isWrongNetwork, isSwitching, trySwitch, switchChainAvailable } = useWrongNetwork();
+
+  if (isConnected && isWrongNetwork) {
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => (switchChainAvailable ? trySwitch() : open({ view: "Networks" }))}
+          disabled={isSwitching}
+          className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/20 transition-colors"
+        >
+          {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet"}
+        </button>
+        <button
+          onClick={() => open()}
+          className="rounded-none border border-border px-3 py-1.5 font-mono text-xs hover:bg-foreground hover:text-background transition-colors"
+        >
+          {address ? shortenHex(address) : "Wallet"}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <button
       onClick={() => open()}
@@ -51,35 +101,69 @@ function SummaryStrip({ rows }: { rows: AuditRow[] }) {
 
 function DisputeForm({ row }: { row: AuditRow }) {
   const [reason, setReason] = useState("");
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { isConnected, isWrongNetwork, isSwitching, trySwitch } = useWrongNetwork();
+
+  const { writeContract, data: hash, isPending, error: writeError, reset: resetWrite } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
+
+  const rawError = writeError || confirmError;
+  const errorMessage = rawError ? parseContractError(rawError) : null;
 
   if (!row.programId) return null;
 
   return (
-    <div className="space-y-2 border-t border-border pt-4">
+    <div className="space-y-3 border-t border-border pt-4">
       <label className="block text-sm text-foreground/60">Ajukan Sanggahan</label>
       <textarea
         value={reason}
-        onChange={(e) => setReason(e.target.value)}
+        onChange={(e) => {
+          if (rawError) resetWrite();
+          setReason(e.target.value);
+        }}
         placeholder="Jelaskan kecurigaan Anda soal pengajuan ini…"
         rows={2}
         className="w-full border border-border p-2 font-mono text-sm bg-transparent"
       />
-      <button
-        disabled={!reason || isPending || isConfirming}
-        onClick={() =>
-          writeContract({
-            address: POOL,
-            abi: disbursementPoolAbi,
-            functionName: "ajukanSanggahan",
-            args: [row.programId!, row.idHash, reason],
-          })
-        }
-        className="border border-accent-rejected text-accent-rejected px-4 py-2 font-mono text-sm hover:bg-accent-rejected hover:text-background transition-colors disabled:opacity-40"
-      >
-        {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Mengirim…" : isSuccess ? "Sanggahan Terkirim ✓" : "Kirim Sanggahan"}
-      </button>
+
+      {!isConnected ? (
+        <p className="text-sm text-foreground/50">Connect wallet dulu untuk mengajukan sanggahan.</p>
+      ) : isWrongNetwork ? (
+        <button
+          type="button"
+          onClick={trySwitch}
+          disabled={isSwitching}
+          className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
+        >
+          {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet untuk Sanggah"}
+        </button>
+      ) : (
+        <button
+          disabled={!reason || isPending || isConfirming}
+          onClick={() =>
+            writeContract({
+              address: POOL,
+              abi: disbursementPoolAbi,
+              functionName: "ajukanSanggahan",
+              args: [row.programId!, row.idHash, reason],
+            })
+          }
+          className="border border-accent-rejected text-accent-rejected px-4 py-2 font-mono text-sm hover:bg-accent-rejected hover:text-background transition-colors disabled:opacity-40"
+        >
+          {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Mengirim…" : isSuccess ? "Sanggahan Terkirim ✓" : "Kirim Sanggahan"}
+        </button>
+      )}
+
+      {errorMessage && (
+        <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+          <div className="flex items-center justify-between font-semibold">
+            <span>Gagal Mengajukan Sanggahan</span>
+            <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
+              Tutup
+            </button>
+          </div>
+          <p className="break-words leading-relaxed">{errorMessage}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -94,10 +178,7 @@ function IndexerBadge({ source }: { source: "live" | "fallback" }) {
     );
   }
   return (
-    <span
-      className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50"
-      title="Indexer tidak terjangkau — ini data cadangan, bukan data real-time"
-    >
+    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title="Indexer tidak terjangkau — ini data cadangan, bukan data real-time">
       <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
       Demo Mode — data cadangan
     </span>
@@ -144,8 +225,8 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
     args: [row.idHash],
   });
 
-    const onchainMetadataURI = onchain?.[4] as string | undefined;
-    const metadataURI = PROOF_URL_OVERRIDES[row.idHash] ?? onchainMetadataURI;
+  const onchainMetadataURI = onchain?.[4] as string | undefined;
+  const metadataURI = PROOF_URL_OVERRIDES[row.idHash] ?? onchainMetadataURI;
 
   const { data: proof } = useQuery({
     queryKey: ["proof", metadataURI],
@@ -157,8 +238,12 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
     enabled: Boolean(metadataURI),
   });
 
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+    const { isConnected, isWrongNetwork, isSwitching, trySwitch } = useWrongNetwork();
+  const { writeContract, data: hash, isPending, error: writeError, reset: resetWrite } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
+
+  const rawError = writeError || confirmError;
+  const errorMessage = rawError ? parseContractError(rawError) : null;
 
   const canCairkan = row.status === "siap_cair" && row.programId;
 
@@ -215,21 +300,48 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
         ))}
       </ol>
 
-            {canCairkan && (
-        <button
-          disabled={isPending || isConfirming}
-          onClick={() =>
-            writeContract({
-              address: POOL,
-              abi: disbursementPoolAbi,
-              functionName: "cairkan",
-              args: [row.programId!, row.idHash],
-            })
-          }
-          className="border border-accent-verified text-accent-verified px-4 py-2 font-mono text-sm hover:bg-accent-verified hover:text-background transition-colors disabled:opacity-40"
-        >
-          {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Memproses…" : isSuccess ? "Dana Cair ✓" : "Cairkan Dana"}
-        </button>
+      {canCairkan && (
+        <div className="space-y-2">
+          {!isConnected ? (
+            <p className="text-sm text-foreground/50">Connect wallet dulu untuk mencairkan dana.</p>
+          ) : isWrongNetwork ? (
+            <button
+              type="button"
+              onClick={trySwitch}
+              disabled={isSwitching}
+              className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
+            >
+              {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet untuk Cairkan Dana"}
+            </button>
+          ) : (
+            <button
+              disabled={isPending || isConfirming || isSuccess}
+              onClick={() =>
+                writeContract({
+                  address: POOL,
+                  abi: disbursementPoolAbi,
+                  functionName: "cairkan",
+                  args: [row.programId!, row.idHash],
+                })
+              }
+              className="border border-accent-verified text-accent-verified px-4 py-2 font-mono text-sm hover:bg-accent-verified hover:text-background transition-colors disabled:opacity-40"
+            >
+              {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Memproses…" : isSuccess ? "Dana Cair ✓" : "Cairkan Dana"}
+            </button>
+          )}
+
+          {errorMessage && (
+            <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+              <div className="flex items-center justify-between font-semibold">
+                <span>Gagal Mencairkan Dana</span>
+                <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
+                  Tutup
+                </button>
+              </div>
+              <p className="break-words leading-relaxed">{errorMessage}</p>
+            </div>
+          )}
+        </div>
       )}
 
       {row.approvedAt && <DisputeForm row={row} />}
@@ -239,8 +351,9 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
 
 export default function Home() {
   const [selected, setSelected] = useState<AuditRow | null>(null);
+  const { isWrongNetwork, isSwitching, trySwitch, chainId } = useWrongNetwork();
 
-    const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["audit-trail"],
     queryFn: fetchAuditTrail,
     select: (result) => ({ rows: buildAuditRows(result.data), source: result.source }),
@@ -249,13 +362,31 @@ export default function Home() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-            <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="font-serif text-2xl">BanSosChain</h1>
           {data && <IndexerBadge source={data.source} />}
-        </div>
-        <ConnectButton />
       </div>
+        <div className="flex items-center gap-2">
+          <AdminLink />
+          <ConnectButton />
+        </div>
+      </div>
+
+      {isWrongNetwork && (
+        <div className="border border-accent-warning/40 bg-accent-warning/5 p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-accent-warning">
+          <span>
+            Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSosChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.
+          </span>
+          <button
+            onClick={trySwitch}
+            disabled={isSwitching}
+            className="px-3 py-1.5 bg-accent-warning text-background font-mono text-xs whitespace-nowrap transition-colors disabled:opacity-50"
+          >
+            {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet"}
+          </button>
+        </div>
+      )}
 
       {isLoading && <p className="font-mono text-sm text-foreground/50">Memuat data…</p>}
       {error && <p className="font-mono text-sm text-accent-rejected">Gagal ambil data dari indexer.</p>}
@@ -278,11 +409,7 @@ export default function Home() {
             </thead>
             <tbody>
               {data.rows.map((row) => (
-                <tr
-                  key={row.idHash}
-                  onClick={() => setSelected(row)}
-                  className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5"
-                >
+                <tr key={row.idHash} onClick={() => setSelected(row)} className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5">
                   <td className="p-3">{shortenHex(row.idHash)}</td>
                   <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
                   <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "—"}</td>

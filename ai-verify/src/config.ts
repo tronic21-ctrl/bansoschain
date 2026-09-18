@@ -21,3 +21,11 @@ export const LLM = {
 
 export const PONDER_GRAPHQL_URL = (process.env.PONDER_GRAPHQL_URL ?? "http://localhost:42069").replace(/\/$/, "");
 export const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_SECONDS ?? 15) * 1000;
+
+// Sementara hardcode satu program aktif — usulkanPenerima() gak punya parameter programId,
+// jadi belum ada cara baca ini per-penerima langsung dari chain. Kalau nanti ada >1 program
+// aktif bersamaan, ini perlu jadi pilihan manual di form admin, bukan konstanta tunggal.
+if (!process.env.DEFAULT_PROGRAM_ID) {
+  throw new Error("DEFAULT_PROGRAM_ID belum diisi di .env");
+}
+export const DEFAULT_PROGRAM_ID = process.env.DEFAULT_PROGRAM_ID as `0x${string}`;

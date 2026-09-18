@@ -1,7 +1,6 @@
 import "dotenv/config";
-import { POLL_INTERVAL_MS } from "./config";
+import { POLL_INTERVAL_MS, DEFAULT_PROGRAM_ID } from "./config";
 import { getPendingBeneficiaries } from "./services/watcher";
-import { findApplication } from "./services/dummyData";
 import { getBeneficiary, setBeneficiaryStatus, approveDisbursement } from "./services/onchain";
 import { judgeProof } from "./domain/judge";
 import { BeneficiaryStatus } from "./domain/abi";
@@ -9,12 +8,6 @@ import { BeneficiaryStatus } from "./domain/abi";
 let isRunning = false;
 
 async function processOne(idHash: `0x${string}`) {
-  const app = findApplication(idHash);
-  if (!app) {
-    console.warn(`[skip] ${idHash} — gak ada di dummy-applications.json`);
-    return;
-  }
-
   const onchain = await getBeneficiary(idHash);
 
   // Guard utama: cek status ASLI langsung dari kontrak, bukan dari Ponder.
@@ -26,9 +19,14 @@ async function processOne(idHash: `0x${string}`) {
     return;
   }
 
-  console.log(`[proses] ${idHash} — wallet ${onchain.wallet}, program ${app.programId}`);
+  if (!onchain.metadataURI) {
+    console.warn(`[skip] ${idHash} — metadataURI kosong di on-chain, gak ada bukti buat dinilai`);
+    return;
+  }
 
-  const verdict = await judgeProof(app.metadataURI);
+  console.log(`[proses] ${idHash} — wallet ${onchain.wallet}, program ${DEFAULT_PROGRAM_ID}`);
+
+  const verdict = await judgeProof(onchain.metadataURI);
   console.log(`[verdict] ${idHash} eligible=${verdict.eligible} confidence=${verdict.confidence}`);
   if (verdict.flagged_concerns.length > 0) {
     console.log(`[flagged] ${idHash}:`, verdict.flagged_concerns);
@@ -36,7 +34,7 @@ async function processOne(idHash: `0x${string}`) {
 
   await setBeneficiaryStatus(idHash, verdict.eligible);
   if (verdict.eligible) {
-    await approveDisbursement(app.programId, idHash);
+    await approveDisbursement(DEFAULT_PROGRAM_ID, idHash);
   }
 }
 

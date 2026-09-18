@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_OPTIONS=\"--max-old-space-size=256 --dns-result-order=ipv4first\" ponder dev",
+    "dev": "NODE_OPTIONS=\"--max-old-space-size=512 --dns-result-order=ipv4first --no-network-family-autoselection\" ponder dev",
     "start": "NODE_OPTIONS=\"--max-old-space-size=256\" ponder start",
     "db": "ponder db",
     "codegen": "ponder codegen"

@@ -8,7 +8,7 @@ const sourceSerif = { variable: "--font-source-serif" };
 const plexMono = { variable: "--font-plex-mono" };
 
 export const metadata: Metadata = {
-  title: "BanSosChain | Audit Trail Pencairan Bansos",
+  title: "BanSOSChain (BSOS-Chain) | Audit Trail Pencairan Bansos",
   description: "Transparansi pencairan bantuan sosial, tercatat on-chain.",
 };
 

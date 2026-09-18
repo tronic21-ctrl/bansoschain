@@ -23,6 +23,14 @@ export const AUDIT_TRAIL_QUERY = gql`
   }
 `;
 
+export const PENDING_QUERY = gql`
+  query {
+    beneficiariess(where: { status: "Pending" }) {
+      items { idHash }
+    }
+  }
+`;
+
 type Beneficiary = { idHash: string; registeredBy: string; btype: string; status: string; registeredAt: string; updatedAt: string; txHash: string };
 type Program = { programId: string; dtype: string; amountPerBeneficiary: string; createdAt: string };
 type Approval = { id: string; programId: string; idHash: string; approvedAt: string; txHash: string };
@@ -85,4 +93,9 @@ export async function fetchAuditTrail(): Promise<FetchResult> {
     console.warn("Ponder indexer offline/unreachable, fallback ke snapshot data on-chain:", err);
     return { data: FALLBACK_AUDIT_DATA, source: "fallback" };
   }
+}
+
+export async function fetchPendingBeneficiaries(): Promise<string[]> {
+  const data = await ponderClient.request<{ beneficiariess: { items: { idHash: string }[] } }>(PENDING_QUERY);
+  return data.beneficiariess.items.map((b) => b.idHash);
 }
