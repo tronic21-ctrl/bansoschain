@@ -8,6 +8,7 @@ import {
   useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
+  useSimulateContract,
 } from "wagmi";
 import { fetchAuditTrail } from "@/lib/graphql";
 import { parseContractError, useWrongNetwork } from "@/lib/web3-helpers";
@@ -238,7 +239,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
     enabled: Boolean(metadataURI),
   });
 
-    const { isConnected, isWrongNetwork, isSwitching, trySwitch } = useWrongNetwork();
+  const { isConnected, isWrongNetwork, isSwitching, trySwitch } = useWrongNetwork();
   const { writeContract, data: hash, isPending, error: writeError, reset: resetWrite } = useWriteContract();
   const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
 
@@ -246,6 +247,16 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
   const errorMessage = rawError ? parseContractError(rawError) : null;
 
   const canCairkan = row.status === "siap_cair" && row.programId;
+
+  const { error: simulateError } = useSimulateContract({
+    address: POOL,
+    abi: disbursementPoolAbi,
+    functionName: "cairkan",
+    args: [row.programId!, row.idHash],
+    query: { enabled: Boolean(canCairkan) && isConnected && !isWrongNetwork },
+  });
+  const preflightError =
+    simulateError && !isPending && !isConfirming && !isSuccess ? parseContractError(simulateError) : null;
 
   return (
     <div className="border border-border border-t-0 p-6 space-y-4">
@@ -321,7 +332,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
             </button>
           ) : (
             <button
-              disabled={isPending || isConfirming || isSuccess}
+              disabled={isPending || isConfirming || isSuccess || Boolean(simulateError)}
               onClick={() =>
                 writeContract({
                   address: POOL,
@@ -334,6 +345,13 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
             >
               {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Memproses…" : isSuccess ? "Dana Cair ✓" : "Cairkan Dana"}
             </button>
+          )}
+
+          {preflightError && (
+            <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+              <div className="font-semibold">Tidak Bisa Dicairkan</div>
+              <p className="break-words leading-relaxed">{preflightError}</p>
+            </div>
           )}
 
           {errorMessage && (

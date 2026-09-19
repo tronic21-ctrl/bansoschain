@@ -12,8 +12,29 @@ export function parseContractError(err: unknown): string {
   if (msg.includes("insufficient funds")) {
     return "Saldo tBNB di dompet tidak mencukupi untuk gas fee.";
   }
-  if (msg.includes("MasihMasaSanggah")) {
+    if (msg.includes("MasihMasaSanggah")) {
     return "Belum bisa dicairkan — masih dalam masa sanggah 24 jam sejak disetujui.";
+  }
+  if (msg.includes("BukanEligible")) {
+    return "Penerima ini berstatus tidak eligible (kemungkinan disuspend atau ditolak) — dana tidak bisa dicairkan.";
+  }
+  if (msg.includes("ProgramTidakAktif")) {
+    return "Program bansos ini sudah tidak aktif.";
+  }
+  if (msg.includes("SudahDiklaim")) {
+    return "Dana untuk penerima ini sudah pernah dicairkan sebelumnya.";
+  }
+  if (msg.includes("CapTerlampaui")) {
+    return "Batas total dana program ini sudah terlampaui.";
+  }
+  if (msg.includes("LewatBatasNominal")) {
+    return "Nominal pencairan melebihi batas maksimum per transaksi.";
+  }
+  if (msg.includes("BelumWaktunya")) {
+    return "Belum waktunya untuk pencairan periode ini.";
+  }
+  if (msg.includes("BelumDisetujui")) {
+    return "Pencairan ini belum disetujui verifier.";
   }
   if (msg.includes("BukanVerifier")) {
     return "Wallet ini bukan verifier terdaftar.";
