@@ -432,13 +432,34 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {data.rows.map((row) => (
-                <tr key={row.idHash} onClick={() => setSelected(row)} className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5">
-                  <td className="p-3">{shortenHex(row.idHash)}</td>
-                  <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
-                  <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "—"}</td>
+              {data.rows.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-6 text-center text-foreground/50">
+                    Belum ada pengajuan.
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                data.rows.map((row) => (
+                  <tr
+                    key={row.idHash}
+                    onClick={() => setSelected(row)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelected(row);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Lihat detail pengajuan ${shortenHex(row.idHash)}`}
+                    className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
+                  >
+                    <td className="p-3">{shortenHex(row.idHash)}</td>
+                    <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
+                    <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "—"}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
