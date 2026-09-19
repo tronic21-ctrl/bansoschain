@@ -5,7 +5,7 @@ export const BSC_TESTNET_ID = 97;
 export function parseContractError(err: unknown): string {
   if (!err) return "";
   const errObj = err as { shortMessage?: string; message?: string };
-  const msg = errObj.shortMessage || errObj.message || String(err);
+  const msg = [errObj.shortMessage, errObj.message].filter(Boolean).join(" ") || String(err);
   if (msg.includes("User rejected") || msg.includes("user rejected") || msg.includes("denied") || msg.includes("Rejected")) {
     return "Transaksi dibatalkan di dompet (User rejected).";
   }
