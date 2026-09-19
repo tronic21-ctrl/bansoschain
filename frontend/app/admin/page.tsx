@@ -46,7 +46,7 @@ function RegisterForm() {
           <label className={labelCls}>Metadata URI</label>
           <textarea
             value={metadataURI}
-            onChange={(e) => setMetadataURI(e.target.value.replace(/\n/g, ""))}
+            onChange={(e) => setMetadataURI(e.target.value)}
             placeholder="https://…"
             rows={2}
             className={`${inputCls} resize-y break-all`}
