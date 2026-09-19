@@ -145,9 +145,11 @@ export default function AdminPage() {
         <h1 className="font-serif text-2xl">Panel Admin</h1>
         <a href="/" className="text-xs font-mono text-foreground/60 hover:text-foreground shrink-0">← Dashboard</a>
       </div>
-      <RegisterForm />
-      <StatusForm />
-      <p className="text-xs text-foreground/50 mt-8 pt-4 border-t border-border">Program aktif: 0xb34b13…50ab (hardcode DEFAULT_PROGRAM_ID)</p>
+      <div className="border border-border bg-surface p-6">
+        <RegisterForm />
+        <StatusForm />
+        <p className="text-xs text-foreground/50 mt-8 pt-4 border-t border-border">Program aktif: 0xb34b13…50ab (hardcode DEFAULT_PROGRAM_ID)</p>
+      </div>
     </main>
   );
 }

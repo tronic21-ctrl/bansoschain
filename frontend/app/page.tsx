@@ -273,7 +273,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
       </div>
 
       {proof && (
-        <pre className="whitespace-pre-wrap font-serif text-base leading-relaxed border-l-2 border-border pl-4">
+        <pre className="whitespace-pre-wrap font-serif text-base leading-relaxed">
           {proof}
         </pre>
       )}
