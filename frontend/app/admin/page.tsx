@@ -29,7 +29,7 @@ function RegisterForm() {
         <div>
           <label className={labelCls}>ID Hash (bytes32)</label>
           <input value={idHash} onChange={(e) => { if (writeError || confirmError) reset(); setIdHash(e.target.value); }} placeholder="0x…" className={inputCls} />
-          <p className="text-xs text-foreground/50 mt-1">Dihitung manual — belum ada standar hashing NIK di sistem.</p>
+          <p className="text-xs text-foreground/50 mt-1">Dihitung manual - belum ada standar hashing NIK di sistem.</p>
         </div>
         <div>
           <label className={labelCls}>Alamat wallet penerima</label>

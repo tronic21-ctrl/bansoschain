@@ -81,7 +81,7 @@ export const STATUS_LABEL: Record<DisplayStatus, string> = {
   menunggu_verifikasi: "Menunggu Verifikasi",
   ditolak: "Ditolak",
   disuspend: "Disuspend",
-  disetujui_masa_sanggah: "Disetujui — Masa Sanggah",
+  disetujui_masa_sanggah: "Disetujui - Masa Sanggah",
   siap_cair: "Siap Dicairkan",
   dicairkan: "Dicairkan",
 };

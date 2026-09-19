@@ -1,5 +1,5 @@
 // Override manual buat idHash yang metadataURI on-chain-nya rusak permanen
-// (immutable, gak ada fungsi update di kontrak) — lihat catatan Fase 5/6.
+// (immutable, gak ada fungsi update di kontrak) - lihat catatan Fase 5/6.
 export const PROOF_URL_OVERRIDES: Record<string, string> = {
   "0x11dadb1cc33f8fa1d162361197ad56faa0528dcd49f5bbcfbc877166df5d0744":
     "https://gist.githubusercontent.com/tronic21-ctrl/3390203a4c75d17cd4f0dc79d973022a/raw/701fe1674c34b017a0ba49ccd65782cadb699746/gistfile1.txt",

@@ -13,10 +13,10 @@ export function parseContractError(err: unknown): string {
     return "Saldo tBNB di dompet tidak mencukupi untuk gas fee.";
   }
     if (msg.includes("MasihMasaSanggah")) {
-    return "Belum bisa dicairkan — masih dalam masa sanggah 24 jam sejak disetujui.";
+    return "Belum bisa dicairkan - masih dalam masa sanggah 24 jam sejak disetujui.";
   }
   if (msg.includes("BukanEligible")) {
-    return "Penerima ini berstatus tidak eligible (kemungkinan disuspend atau ditolak) — dana tidak bisa dicairkan.";
+    return "Penerima ini berstatus tidak eligible (kemungkinan disuspend atau ditolak) - dana tidak bisa dicairkan.";
   }
   if (msg.includes("ProgramTidakAktif")) {
     return "Program bansos ini sudah tidak aktif.";

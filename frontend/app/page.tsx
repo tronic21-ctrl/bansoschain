@@ -179,9 +179,9 @@ function IndexerBadge({ source }: { source: "live" | "fallback" }) {
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title="Indexer tidak terjangkau — ini data cadangan, bukan data real-time">
+    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title="Indexer tidak terjangkau - ini data cadangan, bukan data real-time">
       <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
-      Demo Mode — data cadangan
+      Demo Mode - data cadangan
     </span>
   );
 }
@@ -259,7 +259,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
     simulateError && !isPending && !isConfirming && !isSuccess ? parseContractError(simulateError) : null;
 
   return (
-    <div className="border border-border border-t-0 p-6 space-y-4">
+      <div className="border border-border bg-surface p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-xl">Detail Pengajuan</h2>
         <button onClick={onClose} className="text-sm text-foreground/50 hover:text-foreground">
@@ -386,11 +386,11 @@ export default function Home() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-serif text-2xl">BanSosChain</h1>
           {data && <IndexerBadge source={data.source} />}
-      </div>
+        </div>
         <div className="flex items-center gap-2">
           <AdminLink />
           <ConnectButton />
@@ -456,7 +456,7 @@ export default function Home() {
                   >
                     <td className="p-3">{shortenHex(row.idHash)}</td>
                     <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
-                    <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "—"}</td>
+                    <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                   </tr>
                 ))
               )}
