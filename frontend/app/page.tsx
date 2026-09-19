@@ -89,7 +89,7 @@ function SummaryStrip({ rows }: { rows: AuditRow[] }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 border border-border">
+    <div className="grid grid-cols-3 border border-border bg-surface">
       {stats.map((s, i) => (
         <div key={s.label} className={`p-4 ${i > 0 ? "border-l border-border" : ""}`}>
           <div className="font-mono text-3xl">{s.value}</div>
@@ -202,7 +202,7 @@ function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
   const pct = totalCap > 0n ? Number((totalDisbursed * 100n) / totalCap) : 0;
 
   return (
-    <div className="border border-border p-4 space-y-2">
+    <div className="border border-border bg-surface p-4 space-y-2">
       <div className="flex items-center justify-between font-mono text-sm">
         <span className="text-foreground/60">
           Program {shortenHex(programId)}{!active && " (nonaktif)"}
@@ -423,7 +423,7 @@ export default function Home() {
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
           ))}
 
-          <table className="w-full border border-border border-t-0 font-mono text-sm">
+          <table className="w-full border border-border bg-surface font-mono text-sm">
             <thead>
               <tr className="border-b border-border text-left text-foreground/50">
                 <th className="p-3 font-normal">Penerima</th>
