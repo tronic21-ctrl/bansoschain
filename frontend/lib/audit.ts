@@ -3,6 +3,7 @@ import type { AuditTrailData } from "./graphql";
 export type DisplayStatus =
   | "menunggu_verifikasi"
   | "ditolak"
+  | "disuspend"
   | "disetujui_masa_sanggah"
   | "siap_cair"
   | "dicairkan";
@@ -52,6 +53,8 @@ export function buildAuditRows(data: AuditTrailData): AuditRow[] {
     let status: DisplayStatus = "menunggu_verifikasi";
     if (b.status === "Rejected") {
       status = "ditolak";
+    } else if (b.status === "Suspended") {
+      status = "disuspend";
     } else if (disbursement) {
       status = "dicairkan";
     } else if (approval) {
@@ -77,6 +80,7 @@ export function buildAuditRows(data: AuditTrailData): AuditRow[] {
 export const STATUS_LABEL: Record<DisplayStatus, string> = {
   menunggu_verifikasi: "Menunggu Verifikasi",
   ditolak: "Ditolak",
+  disuspend: "Disuspend",
   disetujui_masa_sanggah: "Disetujui — Masa Sanggah",
   siap_cair: "Siap Dicairkan",
   dicairkan: "Dicairkan",
@@ -85,6 +89,7 @@ export const STATUS_LABEL: Record<DisplayStatus, string> = {
 export const STATUS_COLOR: Record<DisplayStatus, string> = {
   menunggu_verifikasi: "text-foreground/50",
   ditolak: "text-accent-rejected",
+  disuspend: "text-accent-warning",
   disetujui_masa_sanggah: "text-foreground/70",
   siap_cair: "text-accent-verified",
   dicairkan: "text-accent-verified",
