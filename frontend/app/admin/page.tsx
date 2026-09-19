@@ -42,7 +42,7 @@ function RegisterForm() {
             <option value="1">Group</option>
           </select>
         </div>
-      <div>
+        <div>
           <label className={labelCls}>Metadata URI</label>
           <textarea
             value={metadataURI}
@@ -52,7 +52,6 @@ function RegisterForm() {
             className={`${inputCls} resize-y break-all`}
           />
         </div>
-      </div>
         <button
           disabled={!idHash || !wallet || !metadataURI || isPending || isConfirming}
           onClick={() => writeContract({ address: REGISTRY, abi: beneficiaryRegistryAbi, functionName: "usulkanPenerima", args: [idHash as `0x${string}`, wallet as `0x${string}`, Number(btype), metadataURI] })}
