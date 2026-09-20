@@ -41,11 +41,12 @@ ponder.on("DisbursementPool:PencairanDisetujui", async ({ event, context }) => {
       approvedAt: event.args.approvedAt,
       txHash: event.transaction.hash,
     });
-  } catch (err) {
+  } catch (err: any) {
     // approval berulang buat pasangan programId+idHash yang sama —
     // sisa dari bug lama ai-verify (udah difix), bukan error baru.
     // Event kedua dst di-skip, bukan bikin indexer crash.
-    if (!(err instanceof Error) || !err.name.includes("UniqueConstraint")) {
+    const msg = String(err.message || "").toLowerCase();
+    if (!msg.includes("unique constraint") && !msg.includes("duplicate key") && err.code !== "23505") {
       throw err;
     }
   }
