@@ -281,14 +281,13 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
               const key = line.slice(0, colonIdx).trim();
               const value = line.slice(colonIdx + 1).trim();
               return (
-                <div key={i} className="text-sm leading-relaxed">
-                  <span className="font-mono text-foreground/50">{key}</span>
-                  <span className="font-mono text-foreground/30 mx-1">—</span>
-                  <span className="font-serif text-foreground">{value}</span>
+                <div key={i} className="text-sm leading-relaxed flex items-start">
+                  <span className="text-foreground/50 w-24 shrink-0">{key}:</span>
+                  <span className="text-foreground">{value}</span>
                 </div>
               );
             }
-            return <div key={i} className="font-serif text-sm text-foreground leading-relaxed">{line}</div>;
+            return <div key={i} className="text-sm text-foreground leading-relaxed">{line}</div>;
           })}
         </div>
       )}
