@@ -267,7 +267,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
         </button>
       </div>
 
-      <div className="space-y-1 font-mono text-sm text-foreground/70">
+      <div className="space-y-1 font-mono text-sm text-foreground/70 break-all">
         <div>{row.idHash}</div>
         {onchain?.[1] && <div>Wallet: {onchain[1]}</div>}
       </div>
@@ -400,12 +400,12 @@ export default function Home() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-serif text-2xl">BanSosChain</h1>
           {data && <IndexerBadge source={data.source} />}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <AdminLink />
           <ConnectButton />
         </div>
@@ -437,45 +437,47 @@ export default function Home() {
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
           ))}
 
-          <table className="w-full border border-border bg-surface font-mono text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-foreground/50">
-                <th className="p-3 font-normal">Penerima</th>
-                <th className="p-3 font-normal">Status</th>
-                <th className="p-3 font-normal">Jumlah</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.rows.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="p-6 text-center text-foreground/50">
-                    Belum ada pengajuan.
-                  </td>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full border border-border bg-surface font-mono text-sm min-w-[500px]">
+              <thead>
+                <tr className="border-b border-border text-left text-foreground/50">
+                  <th className="p-3 font-normal">Penerima</th>
+                  <th className="p-3 font-normal">Status</th>
+                  <th className="p-3 font-normal">Jumlah</th>
                 </tr>
-              ) : (
-                data.rows.map((row) => (
-                  <tr
-                    key={row.idHash}
-                    onClick={() => setSelected(row)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        setSelected(row);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`Lihat detail pengajuan ${shortenHex(row.idHash)}`}
-                    className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
-                  >
-                    <td className="p-3">{shortenHex(row.idHash)}</td>
-                    <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
-                    <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
+              </thead>
+              <tbody>
+                {data.rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="p-6 text-center text-foreground/50">
+                      Belum ada pengajuan.
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  data.rows.map((row) => (
+                    <tr
+                      key={row.idHash}
+                      onClick={() => setSelected(row)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelected(row);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Lihat detail pengajuan ${shortenHex(row.idHash)}`}
+                      className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
+                    >
+                      <td className="p-3">{shortenHex(row.idHash)}</td>
+                      <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
+                      <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
           {selected && <DetailPanel row={selected} onClose={() => setSelected(null)} />}
         </>
