@@ -413,7 +413,7 @@ export default function Home() {
               className="h-[42px] w-auto dark:hidden"
             />
             <Image
-              src="/logo-wordmark-dark.svg"
+              src="/logo-wordmark-light.svg"
               alt="BanSOSChain"
               width={230}
               height={42}
