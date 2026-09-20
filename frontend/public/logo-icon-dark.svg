@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <mask id="link-cut-dark">
+      <rect width="120" height="120" fill="white" />
+      <rect x="44" y="47" width="18" height="14" rx="2" fill="black" />
+    </mask>
+  </defs>
+
+  <!-- Corner registration marks -->
+  <g stroke="#f6f6f3" stroke-width="1.2" opacity="0.3">
+    <path d="M 8 16 L 8 8 L 16 8" fill="none" />
+    <path d="M 104 8 L 112 8 L 112 16" fill="none" />
+    <path d="M 8 104 L 8 112 L 16 112" fill="none" />
+    <path d="M 104 112 L 112 112 L 112 104" fill="none" />
+  </g>
+
+  <!-- Loop 1 -->
+  <rect x="24" y="22" width="46" height="46" rx="10" 
+        fill="none" stroke="#f6f6f3" stroke-width="7" />
+
+  <!-- Loop 2 -->
+  <rect x="50" y="52" width="46" height="46" rx="10" 
+        fill="none" stroke="#f6f6f3" stroke-width="7" 
+        mask="url(#link-cut-dark)" />
+
+  <path d="M 50 62 L 50 56 A 10 10 0 0 1 60 46 L 70 46" 
+        fill="none" stroke="#f6f6f3" stroke-width="7" stroke-linecap="round" />
+
+  <!-- Verification Nexus -->
+  <circle cx="60" cy="60" r="12" fill="#141513" stroke="#f6f6f3" stroke-width="1.5" />
+  <circle cx="60" cy="60" r="8" fill="#4fb08e" />
+  <circle cx="60" cy="60" r="3" fill="#141513" />
+</svg>

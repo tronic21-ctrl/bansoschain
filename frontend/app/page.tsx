@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useAppKit } from "@reown/appkit/react";
 import {
@@ -402,7 +403,24 @@ export default function Home() {
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-serif text-2xl">BanSosChain</h1>
+          <a href="/" className="flex items-center">
+            <Image
+              src="/logo-wordmark-light.svg"
+              alt="BanSOSChain"
+              width={230}
+              height={42}
+              priority
+              className="h-[42px] w-auto dark:hidden"
+            />
+            <Image
+              src="/logo-wordmark-dark.svg"
+              alt="BanSOSChain"
+              width={230}
+              height={42}
+              priority
+              className="h-[42px] w-auto hidden dark:block"
+            />
+          </a>
           {data && <IndexerBadge source={data.source} />}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -414,7 +432,7 @@ export default function Home() {
       {isWrongNetwork && (
         <div className="border border-accent-warning/40 bg-accent-warning/5 p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-accent-warning">
           <span>
-            Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSosChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.
+            Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSOSChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.
           </span>
           <button
             onClick={trySwitch}
