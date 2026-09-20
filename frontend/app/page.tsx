@@ -273,9 +273,24 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
       </div>
 
       {proof && (
-        <pre className="whitespace-pre-wrap font-serif text-base leading-relaxed">
-          {proof}
-        </pre>
+        <div className="border border-border bg-background p-4 space-y-1.5">
+          <div className="text-[11px] font-mono text-foreground/40 uppercase tracking-wider mb-2">Data Pengajuan</div>
+          {proof.split('\n').filter(Boolean).map((line: string, i: number) => {
+            const colonIdx = line.indexOf(':');
+            if (colonIdx > 0 && colonIdx < 25) {
+              const key = line.slice(0, colonIdx).trim();
+              const value = line.slice(colonIdx + 1).trim();
+              return (
+                <div key={i} className="text-sm leading-relaxed">
+                  <span className="font-mono text-foreground/50">{key}</span>
+                  <span className="font-mono text-foreground/30 mx-1">—</span>
+                  <span className="font-serif text-foreground">{value}</span>
+                </div>
+              );
+            }
+            return <div key={i} className="font-serif text-sm text-foreground leading-relaxed">{line}</div>;
+          })}
+        </div>
       )}
 
       <ol className="space-y-2 font-mono text-sm">
