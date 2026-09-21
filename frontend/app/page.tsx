@@ -415,7 +415,7 @@ export default function Home() {
           </a>
           {data && <span className="min-w-0"><IndexerBadge source={data.source} /></span>}
         </div>
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <div className="flex min-w-0 w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
           <AdminLink />
           <ConnectButton />
         </div>
