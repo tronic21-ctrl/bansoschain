@@ -21,7 +21,65 @@ import { PROOF_URL_OVERRIDES } from "@/lib/proof-overrides";
 const REGISTRY = process.env.NEXT_PUBLIC_BENEFICIARY_REGISTRY_ADDRESS as `0x${string}`;
 const POOL = process.env.NEXT_PUBLIC_DISBURSEMENT_POOL_ADDRESS as `0x${string}`;
 
-function AdminLink() {
+type Language = "id" | "en";
+
+const copy = {
+  id: {
+    admin: "Panel Admin →",
+    connect: "Connect Wallet",
+    about: "Tentang prototype",
+    prototype: "Prototype",
+    submitted: "Diajukan",
+    approved: "Disetujui",
+    disbursed: "Dana Cair",
+    recipient: "Penerima",
+    status: "Status",
+    amount: "Jumlah",
+    empty: "Belum ada pengajuan.",
+    language: "Bahasa",
+    menu: "Menu",
+    close: "Tutup",
+    live: "Live",
+    fallback: "Demo Mode - data cadangan",
+  },
+  en: {
+    admin: "Admin Panel →",
+    connect: "Connect Wallet",
+    about: "About prototype",
+    prototype: "Prototype",
+    submitted: "Submitted",
+    approved: "Approved",
+    disbursed: "Disbursed",
+    recipient: "Recipient",
+    status: "Status",
+    amount: "Amount",
+    empty: "No applications yet.",
+    language: "Language",
+    menu: "Menu",
+    close: "Close",
+    live: "Live",
+    fallback: "Demo Mode - fallback data",
+  },
+} as const;
+
+function statusLabel(status: AuditRow["status"], lang: Language) {
+  const labels = {
+    id: STATUS_LABEL,
+    en: {
+      ...STATUS_LABEL,
+      menunggu_verifikasi: "Pending Verification",
+      disetujui_masa_sanggah: "Approved",
+      siap_cair: "Ready for Disbursement",
+      dicairkan: "Disbursed",
+      ditolak: "Rejected",
+      disuspend: "Suspended",
+    },
+  } as const;
+
+  return labels[lang][status];
+}
+
+function AdminLink({ lang }: { lang: Language }) {
   const { address, isConnected } = useAccount();
   const { data: isVerifierWallet } = useReadContract({
     address: REGISTRY,
@@ -38,12 +96,12 @@ function AdminLink() {
       href="/admin"
       className="border border-border px-3 py-1.5 font-mono text-xs hover:bg-foreground hover:text-background transition-colors"
     >
-      Panel Admin →
+      {copy[lang].admin}
     </a>
   );
 }
 
-function ConnectButton() {
+function ConnectButton({ lang }: { lang: Language }) {
   const { open } = useAppKit();
   const { address, isConnected } = useAccount();
   const { isWrongNetwork, isSwitching, trySwitch, switchChainAvailable } = useWrongNetwork();
@@ -56,7 +114,7 @@ function ConnectButton() {
           disabled={isSwitching}
           className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/20 transition-colors"
         >
-          {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet"}
+          {isSwitching ? "Switching…" : "Switch to BSC Testnet"}
         </button>
         <button
           onClick={() => open()}
@@ -73,20 +131,20 @@ function ConnectButton() {
       onClick={() => open()}
       className="rounded-none border border-border px-4 py-2 font-mono text-sm hover:bg-foreground hover:text-background transition-colors"
     >
-      {isConnected && address ? shortenHex(address) : "Connect Wallet"}
+      {isConnected && address ? shortenHex(address) : copy[lang].connect}
     </button>
   );
 }
 
-function SummaryStrip({ rows }: { rows: AuditRow[] }) {
+function SummaryStrip({ rows, lang }: { rows: AuditRow[]; lang: Language }) {
   const diajukan = rows.length;
   const disetujui = rows.filter((r) => r.status === "disetujui_masa_sanggah" || r.status === "siap_cair").length;
   const cair = rows.filter((r) => r.status === "dicairkan").length;
 
   const stats = [
-    { label: "Diajukan", value: diajukan },
-    { label: "Disetujui", value: disetujui },
-    { label: "Dana Cair", value: cair },
+    { label: copy[lang].submitted, value: diajukan },
+    { label: copy[lang].approved, value: disetujui },
+    { label: copy[lang].disbursed, value: cair },
   ];
 
   return (
@@ -170,24 +228,24 @@ function DisputeForm({ row }: { row: AuditRow }) {
   );
 }
 
-function IndexerBadge({ source }: { source: "live" | "fallback" }) {
+function IndexerBadge({ source, lang }: { source: "live" | "fallback"; lang: Language }) {
   if (source === "live") {
     return (
       <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent-verified">
         <span className="h-1.5 w-1.5 rounded-full bg-accent-verified" />
-        Live
+        {copy[lang].live}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title="Indexer tidak terjangkau - ini data cadangan, bukan data real-time">
       <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
-      Demo Mode - data cadangan
+      {copy[lang].fallback}
     </span>
   );
 }
 
-function PrototypeInfo({ onClose }: { onClose: () => void }) {
+function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -213,39 +271,56 @@ function PrototypeInfo({ onClose }: { onClose: () => void }) {
       >
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-border pb-4">
           <div>
-            <p className="mb-1 font-mono text-[11px] uppercase tracking-wider text-accent-verified">Prototype Hackathon</p>
-            <h2 id="prototype-info-title" className="font-serif text-2xl">Tentang BanSOSChain</h2>
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-wider text-accent-verified">
+              {lang === "id" ? "Prototype Hackathon" : "Hackathon Prototype"}
+            </p>
+            <h2 id="prototype-info-title" className="font-serif text-2xl">
+              {lang === "id" ? "Tentang BanSOSChain" : "About BanSOSChain"}
+            </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="shrink-0 text-sm text-foreground/50 underline hover:text-foreground"
           >
-            Tutup
+            {copy[lang].close}
           </button>
         </div>
 
         <div className="space-y-6 text-sm leading-relaxed">
           <section className="space-y-2">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Tentang prototype</h3>
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Tentang prototype" : "About the prototype"}</h3>
             <p>
-              BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana
-              pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa.
+              {lang === "id"
+                ? "BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa."
+                : "BanSOSChain is a blockchain-based social assistance transparency prototype. It shows how applications, approvals, objections, and disbursements can have an auditable history."}
             </p>
             <p className="border-l-2 border-accent-warning pl-3 text-foreground/70">
-              Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah.
+              {lang === "id"
+                ? "Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah."
+                : "The data shown is simulated for the hackathon demonstration and is not official government data."}
             </p>
           </section>
 
           <section className="space-y-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Cara kerja alur bantuan</h3>
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Cara kerja alur bantuan" : "How the assistance flow works"}</h3>
             <ol className="grid gap-3 sm:grid-cols-5">
               {[
-                ["01", "Diajukan", "Data bantuan didaftarkan."],
-                ["02", "Diverifikasi", "Petugas memeriksa data."],
-                ["03", "Disetujui", "Pengajuan melewati verifikasi."],
-                ["04", "Masa sanggah", "Keberatan dapat diajukan."],
-                ["05", "Dicairkan", "Dana dinyatakan cair."],
+                lang === "id"
+                  ? ["01", "Diajukan", "Data bantuan didaftarkan."]
+                  : ["01", "Submitted", "Assistance data is registered."],
+                lang === "id"
+                  ? ["02", "Diverifikasi", "Petugas memeriksa data."]
+                  : ["02", "Verified", "An officer reviews the data."],
+                lang === "id"
+                  ? ["03", "Disetujui", "Pengajuan melewati verifikasi."]
+                  : ["03", "Approved", "The application passes verification."],
+                lang === "id"
+                  ? ["04", "Masa sanggah", "Keberatan dapat diajukan."]
+                  : ["04", "Objection period", "Objections can be submitted."],
+                lang === "id"
+                  ? ["05", "Dicairkan", "Dana dinyatakan cair."]
+                  : ["05", "Disbursed", "Funds are marked as disbursed."],
               ].map(([number, title, description]) => (
                 <li key={number} className="border border-border bg-background p-3">
                   <div className="mb-2 font-mono text-xs text-accent-verified">{number}</div>
@@ -257,14 +332,24 @@ function PrototypeInfo({ onClose }: { onClose: () => void }) {
           </section>
 
           <section className="space-y-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Istilah teknis</h3>
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Istilah teknis" : "Technical terms"}</h3>
             <dl className="grid gap-3 sm:grid-cols-2">
               {[
-                ["Wallet", "Akun digital petugas untuk melakukan aksi administratif."],
-                ["Address", "Identitas digital akun yang tercatat dalam sistem."],
-                ["On-chain", "Data atau riwayat yang dicatat pada jaringan blockchain."],
-                ["mDANA", "Satuan dana atau token simulasi dalam prototype, bukan otomatis Rupiah."],
-                ["Audit trail", "Riwayat perubahan status pengajuan yang dapat diperiksa."],
+                lang === "id"
+                  ? ["Wallet", "Akun digital petugas untuk melakukan aksi administratif."]
+                  : ["Wallet", "A digital account used by officers for administrative actions."],
+                lang === "id"
+                  ? ["Address", "Identitas digital akun yang tercatat dalam sistem."]
+                  : ["Address", "The digital identity of an account recorded in the system."],
+                lang === "id"
+                  ? ["On-chain", "Data atau riwayat yang dicatat pada jaringan blockchain."]
+                  : ["On-chain", "Data or history recorded on a blockchain network."],
+                lang === "id"
+                  ? ["mDANA", "Satuan dana atau token simulasi dalam prototype, bukan otomatis Rupiah."]
+                  : ["mDANA", "A simulated fund or token unit in this prototype, not automatically Indonesian Rupiah."],
+                lang === "id"
+                  ? ["Audit trail", "Riwayat perubahan status pengajuan yang dapat diperiksa."]
+                  : ["Audit trail", "A reviewable history of application status changes."],
               ].map(([term, description]) => (
                 <div key={term} className="border-b border-border pb-2">
                   <dt className="font-mono text-xs text-foreground/70">{term}</dt>
@@ -275,6 +360,64 @@ function PrototypeInfo({ onClose }: { onClose: () => void }) {
           </section>
         </div>
       </section>
+    </div>
+  );
+}
+
+function MenuButton({
+  lang,
+  open,
+  onToggle,
+  onAbout,
+}: {
+  lang: Language;
+  open: boolean;
+  onToggle: () => void;
+  onAbout: () => void;
+}) {
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={copy[lang].menu}
+        className="flex h-10 w-10 items-center justify-center border border-border font-mono text-lg hover:bg-foreground hover:text-background"
+      >
+        <span aria-hidden="true">☰</span>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-12 z-40 w-56 border border-border bg-surface p-3 shadow-lg" role="menu">
+          <div className="mb-2 border-b border-border pb-2">
+            <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-foreground/50">{copy[lang].language}</span>
+            <div className="flex gap-1">
+              {(["id", "en"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem("bansoschain-language", option);
+                    window.dispatchEvent(new CustomEvent("bansoschain-language", { detail: option }));
+                  }}
+                  className={`border px-3 py-1 font-mono text-xs ${lang === option ? "border-foreground bg-foreground text-background" : "border-border hover:bg-foreground/5"}`}
+                >
+                  {option.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+          <AdminLink lang={lang} />
+          <button
+            type="button"
+            onClick={onAbout}
+            className="mt-2 block w-full border border-border px-3 py-2 text-left font-mono text-xs hover:bg-foreground hover:text-background"
+            role="menuitem"
+          >
+            {copy[lang].about}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -483,7 +626,22 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
 export default function Home() {
   const [selected, setSelected] = useState<AuditRow | null>(null);
   const [showPrototypeInfo, setShowPrototypeInfo] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [lang, setLang] = useState<Language>("id");
   const { isWrongNetwork, isSwitching, trySwitch, chainId } = useWrongNetwork();
+
+  useEffect(() => {
+    const storedLanguage = window.localStorage.getItem("bansoschain-language");
+    if (storedLanguage === "id" || storedLanguage === "en") setLang(storedLanguage);
+
+    const handleLanguageChange = (event: Event) => {
+      const language = (event as CustomEvent<Language>).detail;
+      if (language === "id" || language === "en") setLang(language);
+    };
+
+    window.addEventListener("bansoschain-language", handleLanguageChange);
+    return () => window.removeEventListener("bansoschain-language", handleLanguageChange);
+  }, []);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["audit-trail"],
@@ -508,23 +666,24 @@ export default function Home() {
           </a>
           {data && (
             <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="min-w-0"><IndexerBadge source={data.source} /></span>
+              <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
               <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-foreground/50">
-                Prototype
+                {copy[lang].prototype}
               </span>
-              <button
-                type="button"
-                onClick={() => setShowPrototypeInfo(true)}
-                className="font-mono text-xs text-foreground/60 underline decoration-border underline-offset-2 hover:text-foreground"
-              >
-                Tentang prototype
-              </button>
             </div>
           )}
         </div>
         <div className="flex min-w-0 w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
-          <AdminLink />
-          <ConnectButton />
+          <ConnectButton lang={lang} />
+          <MenuButton
+            lang={lang}
+            open={menuOpen}
+            onToggle={() => setMenuOpen((value) => !value)}
+            onAbout={() => {
+              setMenuOpen(false);
+              setShowPrototypeInfo(true);
+            }}
+          />
         </div>
       </div>
 
@@ -548,7 +707,7 @@ export default function Home() {
 
       {data && (
         <>
-          <SummaryStrip rows={data.rows} />
+          <SummaryStrip rows={data.rows} lang={lang} />
 
           {[...new Set(data.rows.map((r) => r.programId).filter(Boolean))].map((pid) => (
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
@@ -558,16 +717,16 @@ export default function Home() {
             <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-foreground/50">
-                  <th className="w-[37%] p-3 font-normal">Penerima</th>
-                  <th className="w-[37%] p-3 font-normal">Status</th>
-                  <th className="w-[26%] p-3 font-normal">Jumlah</th>
+                  <th className="w-[37%] p-3 font-normal">{copy[lang].recipient}</th>
+                  <th className="w-[37%] p-3 font-normal">{copy[lang].status}</th>
+                  <th className="w-[26%] p-3 font-normal">{copy[lang].amount}</th>
                 </tr>
               </thead>
               <tbody>
                 {data.rows.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="p-6 text-center text-foreground/50">
-                      Belum ada pengajuan.
+                      {copy[lang].empty}
                     </td>
                   </tr>
                 ) : (
@@ -587,7 +746,7 @@ export default function Home() {
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
                       <td className="break-words p-3">{shortenHex(row.idHash)}</td>
-                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
+                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>{statusLabel(row.status, lang)}</td>
                       <td className="break-words p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                     </tr>
                   ))
@@ -600,7 +759,7 @@ export default function Home() {
         </>
       )}
 
-      {showPrototypeInfo && <PrototypeInfo onClose={() => setShowPrototypeInfo(false)} />}
+      {showPrototypeInfo && <PrototypeInfo lang={lang} onClose={() => setShowPrototypeInfo(false)} />}
     </main>
   );
 }
