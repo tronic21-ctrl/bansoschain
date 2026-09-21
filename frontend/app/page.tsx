@@ -79,6 +79,15 @@ function statusLabel(status: AuditRow["status"], lang: Language) {
   return labels[lang][status];
 }
 
+function proofLabel(label: string, lang: Language) {
+  if (lang === "id") return label;
+  return {
+    Nama: "Name",
+    Domisili: "Residence",
+    "Alasan pengajuan": "Application reason",
+  }[label] ?? label;
+}
+
 function AdminLink({ lang }: { lang: Language }) {
   const { address, isConnected } = useAccount();
   const { data: isVerifierWallet } = useReadContract({
@@ -159,7 +168,7 @@ function SummaryStrip({ rows, lang }: { rows: AuditRow[]; lang: Language }) {
   );
 }
 
-function DisputeForm({ row }: { row: AuditRow }) {
+function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
   const [reason, setReason] = useState("");
   const { isConnected, isWrongNetwork, isSwitching, trySwitch } = useWrongNetwork();
 
@@ -173,20 +182,22 @@ function DisputeForm({ row }: { row: AuditRow }) {
 
   return (
     <div className="space-y-3 border-t border-border pt-4">
-      <label className="block text-sm text-foreground/60">Ajukan Sanggahan</label>
+      <label className="block text-sm text-foreground/60">{lang === "id" ? "Ajukan Sanggahan" : "Submit Objection"}</label>
       <textarea
         value={reason}
         onChange={(e) => {
           if (rawError) resetWrite();
           setReason(e.target.value);
         }}
-        placeholder="Jelaskan kecurigaan Anda soal pengajuan ini…"
+        placeholder={lang === "id" ? "Jelaskan kecurigaan Anda soal pengajuan ini…" : "Explain your concern about this application…"}
         rows={2}
         className="w-full border border-border p-2 font-mono text-sm bg-transparent"
       />
 
       {!isConnected ? (
-        <p className="text-sm text-foreground/50">Connect wallet dulu untuk mengajukan sanggahan.</p>
+        <p className="text-sm text-foreground/50">
+          {lang === "id" ? "Connect wallet dulu untuk mengajukan sanggahan." : "Connect a wallet first to submit an objection."}
+        </p>
       ) : isWrongNetwork ? (
         <button
           type="button"
@@ -194,7 +205,9 @@ function DisputeForm({ row }: { row: AuditRow }) {
           disabled={isSwitching}
           className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
         >
-          {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet untuk Sanggah"}
+          {isSwitching
+            ? lang === "id" ? "Memindahkan…" : "Switching…"
+            : lang === "id" ? "Pindah ke BSC Testnet untuk Sanggah" : "Switch to BSC Testnet to Object"}
         </button>
       ) : (
         <button
@@ -209,16 +222,20 @@ function DisputeForm({ row }: { row: AuditRow }) {
           }
           className="border border-accent-rejected text-accent-rejected px-4 py-2 font-mono text-sm hover:bg-accent-rejected hover:text-background transition-colors disabled:opacity-40"
         >
-          {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Mengirim…" : isSuccess ? "Sanggahan Terkirim ✓" : "Kirim Sanggahan"}
+          {isPending
+            ? lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…"
+            : isConfirming ? lang === "id" ? "Mengirim…" : "Sending…"
+            : isSuccess ? lang === "id" ? "Sanggahan Terkirim ✓" : "Objection Submitted ✓"
+            : lang === "id" ? "Kirim Sanggahan" : "Submit Objection"}
         </button>
       )}
 
       {errorMessage && (
         <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
           <div className="flex items-center justify-between font-semibold">
-            <span>Gagal Mengajukan Sanggahan</span>
+            <span>{lang === "id" ? "Gagal Mengajukan Sanggahan" : "Objection Failed"}</span>
             <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
-              Tutup
+              {lang === "id" ? "Tutup" : "Close"}
             </button>
           </div>
           <p className="break-words leading-relaxed">{errorMessage}</p>
@@ -422,7 +439,7 @@ function MenuButton({
   );
 }
 
-function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
+function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lang: Language }) {
   const { data: program } = useReadContract({
     address: POOL,
     abi: disbursementPoolAbi,
@@ -441,7 +458,7 @@ function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
     <div className="min-w-0 border border-border bg-surface p-4 space-y-2">
       <div className="flex flex-col gap-1 font-mono text-sm sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 break-words text-foreground/60">
-          Program {shortenHex(programId)}{!active && " (nonaktif)"}
+          Program {shortenHex(programId)}{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
         </span>
         <span className="break-words sm:text-right">
           {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
@@ -454,7 +471,7 @@ function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
   );
 }
 
-function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
+function DetailPanel({ row, onClose, lang }: { row: AuditRow; onClose: () => void; lang: Language }) {
   const { data: onchain } = useReadContract({
     address: REGISTRY,
     abi: beneficiaryRegistryAbi,
@@ -497,20 +514,22 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
   return (
       <div className="border border-border bg-surface p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-xl">Detail Pengajuan</h2>
+        <h2 className="font-serif text-xl">{lang === "id" ? "Detail Pengajuan" : "Application Details"}</h2>
         <button onClick={onClose} className="text-sm text-foreground/50 hover:text-foreground">
-          Tutup
+          {lang === "id" ? "Tutup" : "Close"}
         </button>
       </div>
 
       <div className="space-y-1 font-mono text-sm text-foreground/70 break-all">
         <div>{row.idHash}</div>
-        {onchain?.[1] && <div>Wallet: {onchain[1]}</div>}
+        {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}</div>}
       </div>
 
       {proof && (
         <div className="min-w-0 border border-border bg-background p-4 space-y-1.5">
-          <div className="text-[11px] font-mono text-foreground/40 uppercase tracking-wider mb-2">Data Pengajuan</div>
+          <div className="text-[11px] font-mono text-foreground/40 uppercase tracking-wider mb-2">
+            {lang === "id" ? "Data Pengajuan" : "Application Data"}
+          </div>
           {proof.split('\n').filter(Boolean).map((line: string, i: number) => {
             const colonIdx = line.indexOf(':');
             if (colonIdx > 0 && colonIdx < 25) {
@@ -518,7 +537,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
               const value = line.slice(colonIdx + 1).trim();
               return (
                 <div key={i} className="flex flex-col items-start gap-0 text-sm leading-relaxed sm:flex-row sm:gap-2">
-                  <span className="text-foreground/80 sm:w-[140px] sm:shrink-0">{key}:</span>
+                  <span className="text-foreground/80 sm:w-[140px] sm:shrink-0">{proofLabel(key, lang)}:</span>
                   <span className="min-w-0 break-words text-foreground">{value}</span>
                 </div>
               );
@@ -530,38 +549,38 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
 
       <ol className="space-y-2 font-mono text-sm">
         <li>
-          → Diajukan{" "}
+          → {lang === "id" ? "Diajukan" : "Submitted"}{" "}
           {row.registeredTxHash && (
             <a href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-              (verifikasi)
+              ({lang === "id" ? "verifikasi" : "verify"})
             </a>
           )}
         </li>
         {row.approvedAt && (
           <li>
-            → Disetujui: {formatTimestamp(row.approvedAt)}{" "}
+            → {lang === "id" ? "Disetujui" : "Approved"}: {formatTimestamp(row.approvedAt)}{" "}
             {row.approvedTxHash && (
               <a href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-                (verifikasi)
+                ({lang === "id" ? "verifikasi" : "verify"})
               </a>
             )}
           </li>
         )}
         {row.disbursedAt && (
           <li>
-            → Dana Cair: {formatTimestamp(row.disbursedAt)}{" "}
+            → {lang === "id" ? "Dana Cair" : "Disbursed"}: {formatTimestamp(row.disbursedAt)}{" "}
             {row.disbursedTxHash && (
               <a href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-                (verifikasi)
+                ({lang === "id" ? "verifikasi" : "verify"})
               </a>
             )}
           </li>
         )}
         {row.disputes.map((d, i) => (
           <li key={i} className="text-accent-rejected">
-            → Disanggah oleh {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}{" "}
+            → {lang === "id" ? "Disanggah oleh" : "Objected by"} {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}{" "}
             <a href={`https://testnet.bscscan.com/tx/${d.txHash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
-              (verifikasi)
+              ({lang === "id" ? "verifikasi" : "verify"})
             </a>
           </li>
         ))}
@@ -570,7 +589,9 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
       {canCairkan && (
         <div className="space-y-2">
           {!isConnected ? (
-            <p className="text-sm text-foreground/50">Connect wallet dulu untuk mencairkan dana.</p>
+            <p className="text-sm text-foreground/50">
+              {lang === "id" ? "Connect wallet dulu untuk mencairkan dana." : "Connect a wallet first to disburse funds."}
+            </p>
           ) : isWrongNetwork ? (
             <button
               type="button"
@@ -578,7 +599,9 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
               disabled={isSwitching}
               className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
             >
-              {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet untuk Cairkan Dana"}
+              {isSwitching
+                ? lang === "id" ? "Memindahkan…" : "Switching…"
+                : lang === "id" ? "Pindah ke BSC Testnet untuk Cairkan Dana" : "Switch to BSC Testnet to Disburse Funds"}
             </button>
           ) : (
             <button
@@ -593,13 +616,17 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
               }
               className="border border-accent-verified text-accent-verified px-4 py-2 font-mono text-sm hover:bg-accent-verified hover:text-background transition-colors disabled:opacity-40"
             >
-              {isPending ? "Konfirmasi di wallet…" : isConfirming ? "Memproses…" : isSuccess ? "Dana Cair ✓" : "Cairkan Dana"}
+              {isPending
+                ? lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…"
+                : isConfirming ? lang === "id" ? "Memproses…" : "Processing…"
+                : isSuccess ? lang === "id" ? "Dana Cair ✓" : "Funds Disbursed ✓"
+                : lang === "id" ? "Cairkan Dana" : "Disburse Funds"}
             </button>
           )}
 
           {preflightError && (
             <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
-              <div className="font-semibold">Tidak Bisa Dicairkan</div>
+              <div className="font-semibold">{lang === "id" ? "Tidak Bisa Dicairkan" : "Cannot Disburse"}</div>
               <p className="break-words leading-relaxed">{preflightError}</p>
             </div>
           )}
@@ -607,9 +634,9 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
           {errorMessage && (
             <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
               <div className="flex items-center justify-between font-semibold">
-                <span>Gagal Mencairkan Dana</span>
+                <span>{lang === "id" ? "Gagal Mencairkan Dana" : "Disbursement Failed"}</span>
                 <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
-                  Tutup
+                  {lang === "id" ? "Tutup" : "Close"}
                 </button>
               </div>
               <p className="break-words leading-relaxed">{errorMessage}</p>
@@ -618,7 +645,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
         </div>
       )}
 
-      {row.approvedAt && <DisputeForm row={row} />}
+      {row.approvedAt && <DisputeForm row={row} lang={lang} />}
     </div>
   );
 }
@@ -690,27 +717,31 @@ export default function Home() {
       {isWrongNetwork && (
         <div className="border border-accent-warning/40 bg-accent-warning/5 p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-accent-warning">
           <span>
-            Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSOSChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.
+            {lang === "id"
+              ? <>Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSOSChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.</>
+              : <>Wallet is connected to the wrong network (Chain ID: {chainId}). BanSOSChain operates on <strong>BNB Chain Testnet (Chain ID 97)</strong>.</>}
           </span>
           <button
             onClick={trySwitch}
             disabled={isSwitching}
             className="px-3 py-1.5 bg-accent-warning text-background font-mono text-xs whitespace-nowrap transition-colors disabled:opacity-50"
           >
-            {isSwitching ? "Memindahkan…" : "Pindah ke BSC Testnet"}
+            {isSwitching
+              ? lang === "id" ? "Memindahkan…" : "Switching…"
+              : lang === "id" ? "Pindah ke BSC Testnet" : "Switch to BSC Testnet"}
           </button>
         </div>
       )}
 
-      {isLoading && <p className="font-mono text-sm text-foreground/50">Memuat data…</p>}
-      {error && <p className="font-mono text-sm text-accent-rejected">Gagal ambil data dari indexer.</p>}
+      {isLoading && <p className="font-mono text-sm text-foreground/50">{lang === "id" ? "Memuat data…" : "Loading data…"}</p>}
+      {error && <p className="font-mono text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
 
       {data && (
         <>
           <SummaryStrip rows={data.rows} lang={lang} />
 
           {[...new Set(data.rows.map((r) => r.programId).filter(Boolean))].map((pid) => (
-            <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
+            <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} lang={lang} />
           ))}
 
           <div className="w-full min-w-0">
@@ -742,7 +773,9 @@ export default function Home() {
                       }}
                       tabIndex={0}
                       role="button"
-                      aria-label={`Lihat detail pengajuan ${shortenHex(row.idHash)}`}
+                      aria-label={lang === "id"
+                        ? `Lihat detail pengajuan ${shortenHex(row.idHash)}`
+                        : `View application details ${shortenHex(row.idHash)}`}
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
                       <td className="break-words p-3">{shortenHex(row.idHash)}</td>
@@ -755,7 +788,7 @@ export default function Home() {
             </table>
           </div>
 
-          {selected && <DetailPanel row={selected} onClose={() => setSelected(null)} />}
+          {selected && <DetailPanel row={selected} lang={lang} onClose={() => setSelected(null)} />}
         </>
       )}
 
