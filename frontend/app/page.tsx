@@ -410,15 +410,7 @@ export default function Home() {
               width={230}
               height={42}
               priority
-              className="h-[42px] w-auto dark:hidden"
-            />
-            <Image
-              src="/logo-wordmark-light.svg"
-              alt="BanSOSChain"
-              width={230}
-              height={42}
-              priority
-              className="h-[42px] w-auto hidden dark:block"
+              className="h-[42px] w-auto"
             />
           </a>
           {data && <IndexerBadge source={data.source} />}
