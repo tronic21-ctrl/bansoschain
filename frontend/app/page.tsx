@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useAppKit } from "@reown/appkit/react";
@@ -184,6 +184,98 @@ function IndexerBadge({ source }: { source: "live" | "fallback" }) {
       <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
       Demo Mode - data cadangan
     </span>
+  );
+}
+
+function PrototypeInfo({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        className="max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto border border-border bg-surface p-5 shadow-xl sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="prototype-info-title"
+      >
+        <div className="mb-5 flex items-start justify-between gap-4 border-b border-border pb-4">
+          <div>
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-wider text-accent-verified">Prototype Hackathon</p>
+            <h2 id="prototype-info-title" className="font-serif text-2xl">Tentang BanSOSChain</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 text-sm text-foreground/50 underline hover:text-foreground"
+          >
+            Tutup
+          </button>
+        </div>
+
+        <div className="space-y-6 text-sm leading-relaxed">
+          <section className="space-y-2">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Tentang prototype</h3>
+            <p>
+              BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana
+              pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa.
+            </p>
+            <p className="border-l-2 border-accent-warning pl-3 text-foreground/70">
+              Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Cara kerja alur bantuan</h3>
+            <ol className="grid gap-3 sm:grid-cols-5">
+              {[
+                ["01", "Diajukan", "Data bantuan didaftarkan."],
+                ["02", "Diverifikasi", "Petugas memeriksa data."],
+                ["03", "Disetujui", "Pengajuan melewati verifikasi."],
+                ["04", "Masa sanggah", "Keberatan dapat diajukan."],
+                ["05", "Dicairkan", "Dana dinyatakan cair."],
+              ].map(([number, title, description]) => (
+                <li key={number} className="border border-border bg-background p-3">
+                  <div className="mb-2 font-mono text-xs text-accent-verified">{number}</div>
+                  <div className="font-medium">{title}</div>
+                  <p className="mt-1 text-xs text-foreground/60">{description}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">Istilah teknis</h3>
+            <dl className="grid gap-3 sm:grid-cols-2">
+              {[
+                ["Wallet", "Akun digital petugas untuk melakukan aksi administratif."],
+                ["Address", "Identitas digital akun yang tercatat dalam sistem."],
+                ["On-chain", "Data atau riwayat yang dicatat pada jaringan blockchain."],
+                ["mDANA", "Satuan dana atau token simulasi dalam prototype, bukan otomatis Rupiah."],
+                ["Audit trail", "Riwayat perubahan status pengajuan yang dapat diperiksa."],
+              ].map(([term, description]) => (
+                <div key={term} className="border-b border-border pb-2">
+                  <dt className="font-mono text-xs text-foreground/70">{term}</dt>
+                  <dd className="mt-1 text-xs text-foreground/60">{description}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -390,6 +482,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
 
 export default function Home() {
   const [selected, setSelected] = useState<AuditRow | null>(null);
+  const [showPrototypeInfo, setShowPrototypeInfo] = useState(false);
   const { isWrongNetwork, isSwitching, trySwitch, chainId } = useWrongNetwork();
 
   const { data, isLoading, error } = useQuery({
@@ -413,7 +506,21 @@ export default function Home() {
               className="h-auto w-[180px] sm:h-[42px] sm:w-auto"
             />
           </a>
-          {data && <span className="min-w-0"><IndexerBadge source={data.source} /></span>}
+          {data && (
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="min-w-0"><IndexerBadge source={data.source} /></span>
+              <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-foreground/50">
+                Prototype
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPrototypeInfo(true)}
+                className="font-mono text-xs text-foreground/60 underline decoration-border underline-offset-2 hover:text-foreground"
+              >
+                Tentang prototype
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex min-w-0 w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
           <AdminLink />
@@ -492,6 +599,8 @@ export default function Home() {
           {selected && <DetailPanel row={selected} onClose={() => setSelected(null)} />}
         </>
       )}
+
+      {showPrototypeInfo && <PrototypeInfo onClose={() => setShowPrototypeInfo(false)} />}
     </main>
   );
 }
