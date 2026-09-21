@@ -312,7 +312,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                 ? "BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa."
                 : "BanSOSChain is a blockchain-based social assistance transparency prototype. It shows how applications, approvals, objections, and disbursements can have an auditable history."}
             </p>
-            <p className="border-l-2 border-accent-warning pl-3 text-foreground/70">
+            <p className="border border-accent-warning/40 bg-accent-warning/5 p-3 text-foreground/70">
               {lang === "id"
                 ? "Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah."
                 : "The data shown is simulated for the hackathon demonstration and is not official government data."}
