@@ -90,11 +90,11 @@ function SummaryStrip({ rows }: { rows: AuditRow[] }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 border border-border bg-surface">
+    <div className="grid min-w-0 grid-cols-3 border border-border bg-surface">
       {stats.map((s, i) => (
-        <div key={s.label} className={`p-4 ${i > 0 ? "border-l border-border" : ""}`}>
-          <div className="font-mono text-3xl">{s.value}</div>
-          <div className="text-sm text-foreground/60">{s.label}</div>
+        <div key={s.label} className={`min-w-0 p-3 sm:p-4 ${i > 0 ? "border-l border-border" : ""}`}>
+          <div className="font-mono text-2xl sm:text-3xl">{s.value}</div>
+          <div className="text-xs text-foreground/60 sm:text-sm">{s.label}</div>
         </div>
       ))}
     </div>
@@ -203,12 +203,12 @@ function ProgramSummaryCard({ programId }: { programId: `0x${string}` }) {
   const pct = totalCap > 0n ? Number((totalDisbursed * 100n) / totalCap) : 0;
 
   return (
-    <div className="border border-border bg-surface p-4 space-y-2">
-      <div className="flex items-center justify-between font-mono text-sm">
-        <span className="text-foreground/60">
+    <div className="min-w-0 border border-border bg-surface p-4 space-y-2">
+      <div className="flex flex-col gap-1 font-mono text-sm sm:flex-row sm:items-center sm:justify-between">
+        <span className="min-w-0 break-words text-foreground/60">
           Program {shortenHex(programId)}{!active && " (nonaktif)"}
         </span>
-        <span>
+        <span className="break-words sm:text-right">
           {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
         </span>
       </div>
@@ -274,7 +274,7 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
       </div>
 
       {proof && (
-        <div className="border border-border bg-background p-4 space-y-1.5">
+        <div className="min-w-0 border border-border bg-background p-4 space-y-1.5">
           <div className="text-[11px] font-mono text-foreground/40 uppercase tracking-wider mb-2">Data Pengajuan</div>
           {proof.split('\n').filter(Boolean).map((line: string, i: number) => {
             const colonIdx = line.indexOf(':');
@@ -282,9 +282,9 @@ function DetailPanel({ row, onClose }: { row: AuditRow; onClose: () => void }) {
               const key = line.slice(0, colonIdx).trim();
               const value = line.slice(colonIdx + 1).trim();
               return (
-                <div key={i} className="text-sm leading-relaxed flex items-start gap-2">
-                  <span className="text-foreground/80 w-[140px] shrink-0">{key}:</span>
-                  <span className="text-foreground">{value}</span>
+                <div key={i} className="flex flex-col items-start gap-0 text-sm leading-relaxed sm:flex-row sm:gap-2">
+                  <span className="text-foreground/80 sm:w-[140px] sm:shrink-0">{key}:</span>
+                  <span className="min-w-0 break-words text-foreground">{value}</span>
                 </div>
               );
             }
@@ -400,22 +400,22 @@ export default function Home() {
   });
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <a href="/" className="flex items-center">
+    <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
+      <div className="mb-6 flex min-w-0 flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <a href="/" className="flex min-w-0 items-center">
             <Image
               src="/logo-wordmark-light.svg"
               alt="BanSOSChain"
               width={230}
               height={42}
               priority
-              className="h-[42px] w-auto"
+              className="h-auto w-[180px] sm:h-[42px] sm:w-auto"
             />
           </a>
-          {data && <IndexerBadge source={data.source} />}
+          {data && <span className="min-w-0"><IndexerBadge source={data.source} /></span>}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <AdminLink />
           <ConnectButton />
         </div>
@@ -447,13 +447,13 @@ export default function Home() {
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} />
           ))}
 
-          <div className="w-full overflow-x-auto">
-            <table className="w-full border border-border bg-surface font-mono text-sm min-w-[500px]">
+          <div className="w-full min-w-0">
+            <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-foreground/50">
-                  <th className="p-3 font-normal">Penerima</th>
-                  <th className="p-3 font-normal">Status</th>
-                  <th className="p-3 font-normal">Jumlah</th>
+                  <th className="w-[37%] p-3 font-normal">Penerima</th>
+                  <th className="w-[37%] p-3 font-normal">Status</th>
+                  <th className="w-[26%] p-3 font-normal">Jumlah</th>
                 </tr>
               </thead>
               <tbody>
@@ -479,9 +479,9 @@ export default function Home() {
                       aria-label={`Lihat detail pengajuan ${shortenHex(row.idHash)}`}
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
-                      <td className="p-3">{shortenHex(row.idHash)}</td>
-                      <td className={`p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
-                      <td className="p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
+                      <td className="break-words p-3">{shortenHex(row.idHash)}</td>
+                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</td>
+                      <td className="break-words p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                     </tr>
                   ))
                 )}
