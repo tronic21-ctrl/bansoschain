@@ -41,6 +41,7 @@ const copy = {
     close: "Tutup",
     live: "Live",
     fallback: "Demo Mode - data cadangan",
+    fallbackBanner: "Indexer langsung sedang tidak bisa diakses. Tabel di bawah menampilkan data cadangan, bukan data real-time.",
   },
   en: {
     admin: "Admin Panel →",
@@ -59,6 +60,7 @@ const copy = {
     close: "Close",
     live: "Live",
     fallback: "Demo Mode - fallback data",
+    fallbackBanner: "The live indexer is currently unreachable. The table below shows fallback data, not real-time data.",
   },
 } as const;
 
@@ -147,7 +149,9 @@ function ConnectButton({ lang }: { lang: Language }) {
 
 function SummaryStrip({ rows, lang }: { rows: AuditRow[]; lang: Language }) {
   const diajukan = rows.length;
-  const disetujui = rows.filter((r) => r.status === "disetujui_masa_sanggah" || r.status === "siap_cair").length;
+  const disetujui = rows.filter((r) =>
+    r.status === "disetujui_masa_sanggah" || r.status === "siap_cair" || r.status === "dicairkan"
+  ).length;
   const cair = rows.filter((r) => r.status === "dicairkan").length;
 
   const stats = [
@@ -327,17 +331,17 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["01", "Diajukan", "Data bantuan didaftarkan."]
                   : ["01", "Submitted", "Assistance data is registered."],
                 lang === "id"
-                  ? ["02", "Diverifikasi", "Petugas memeriksa data."]
-                  : ["02", "Verified", "An officer reviews the data."],
+                  ? ["02", "Dinilai AI", "Model AI menilai kelayakan, verdiknya ditulis on-chain."]
+                  : ["02", "AI-reviewed", "An AI model assesses eligibility; the verdict is written on-chain."],
                 lang === "id"
-                  ? ["03", "Disetujui", "Pengajuan melewati verifikasi."]
-                  : ["03", "Approved", "The application passes verification."],
+                  ? ["03", "Disetujui", "Pengajuan melewati verifikasi, pencairan disetujui."]
+                  : ["03", "Approved", "The application passes verification and disbursement is approved."],
                 lang === "id"
-                  ? ["04", "Masa sanggah", "Keberatan dapat diajukan."]
-                  : ["04", "Objection period", "Objections can be submitted."],
+                  ? ["04", "Masa sanggah", "Keberatan dapat diajukan selama 24 jam."]
+                  : ["04", "Objection period", "Objections can be submitted during a 24-hour window."],
                 lang === "id"
-                  ? ["05", "Dicairkan", "Dana dinyatakan cair."]
-                  : ["05", "Disbursed", "Funds are marked as disbursed."],
+                  ? ["05", "Dicairkan", "Dana benar-benar berpindah dari kontrak ke wallet penerima."]
+                  : ["05", "Disbursed", "Funds actually move from the contract to the recipient's wallet."],
               ].map(([number, title, description]) => (
                 <li key={number} className="border border-border bg-background p-3">
                   <div className="mb-2 font-mono text-xs text-accent-verified">{number}</div>
@@ -353,8 +357,11 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
             <dl className="grid gap-3 sm:grid-cols-2">
               {[
                 lang === "id"
-                  ? ["Wallet", "Akun digital petugas untuk melakukan aksi administratif."]
-                  : ["Wallet", "A digital account used by officers for administrative actions."],
+                  ? ["Wallet", "Akun digital di blockchain. Siapa pun bisa memicu pencairan, tapi dana selalu terkirim ke wallet penerima yang tercatat."]
+                  : ["Wallet", "A blockchain account. Anyone can trigger a disbursement, but funds always go to the recipient wallet on record."],
+                lang === "id"
+                  ? ["ID Hash", "Kode acak pengganti identitas penerima, dipakai agar data tetap privat di blockchain publik."]
+                  : ["ID Hash", "A randomized code standing in for a recipient's identity, keeping data private on a public blockchain."],
                 lang === "id"
                   ? ["Address", "Identitas digital akun yang tercatat dalam sistem."]
                   : ["Address", "The digital identity of an account recorded in the system."],
@@ -471,7 +478,7 @@ function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lan
   );
 }
 
-function DetailPanel({ row, onClose, lang }: { row: AuditRow; onClose: () => void; lang: Language }) {
+function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: () => void; lang: Language; source: "live" | "fallback" }) {
   const { data: onchain } = useReadContract({
     address: REGISTRY,
     abi: beneficiaryRegistryAbi,
@@ -549,10 +556,11 @@ function DetailPanel({ row, onClose, lang }: { row: AuditRow; onClose: () => voi
 
       <ol className="space-y-2 font-mono text-sm">
         <li>
-          → {lang === "id" ? "Diajukan" : "Submitted"}{" "}
+          → {lang === "id" ? "Diajukan" : "Submitted"}
+          {source === "live" && onchain?.[5] ? `: ${formatTimestamp(Number(onchain[5]))}` : ""}{" "}
           {row.registeredTxHash && (
-            <a href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-              ({lang === "id" ? "verifikasi" : "verify"})
+            <a href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
+              ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
             </a>
           )}
         </li>
@@ -560,8 +568,8 @@ function DetailPanel({ row, onClose, lang }: { row: AuditRow; onClose: () => voi
           <li>
             → {lang === "id" ? "Disetujui" : "Approved"}: {formatTimestamp(row.approvedAt)}{" "}
             {row.approvedTxHash && (
-              <a href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-                ({lang === "id" ? "verifikasi" : "verify"})
+              <a href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
+                ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
               </a>
             )}
           </li>
@@ -570,8 +578,8 @@ function DetailPanel({ row, onClose, lang }: { row: AuditRow; onClose: () => voi
           <li>
             → {lang === "id" ? "Dana Cair" : "Disbursed"}: {formatTimestamp(row.disbursedAt)}{" "}
             {row.disbursedTxHash && (
-              <a href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-foreground/50 hover:text-foreground">
-                ({lang === "id" ? "verifikasi" : "verify"})
+              <a href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
+                ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
               </a>
             )}
           </li>
@@ -733,6 +741,12 @@ export default function Home() {
         </div>
       )}
 
+      {data && data.source === "fallback" && (
+        <div className="border border-border bg-background p-3.5 font-mono text-xs text-foreground/70">
+          {copy[lang].fallbackBanner}
+        </div>
+      )}
+
       {isLoading && <p className="font-mono text-sm text-foreground/50">{lang === "id" ? "Memuat data…" : "Loading data…"}</p>}
       {error && <p className="font-mono text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
 
@@ -779,7 +793,14 @@ export default function Home() {
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
                       <td className="break-words p-3">{shortenHex(row.idHash)}</td>
-                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>{statusLabel(row.status, lang)}</td>
+                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
+                        {statusLabel(row.status, lang)}
+                        {row.disputes.length > 0 && (
+                          <span className="ml-2 inline-block border border-accent-rejected px-1.5 py-0.5 align-middle text-[10px] font-mono text-accent-rejected">
+                            {row.disputes.length} {lang === "id" ? "sanggahan" : row.disputes.length > 1 ? "objections" : "objection"}
+                          </span>
+                        )}
+                      </td>
                       <td className="break-words p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                     </tr>
                   ))
@@ -788,7 +809,7 @@ export default function Home() {
             </table>
           </div>
 
-          {selected && <DetailPanel row={selected} lang={lang} onClose={() => setSelected(null)} />}
+      {selected && <DetailPanel row={selected} lang={lang} source={data.source} onClose={() => setSelected(null)} />}
         </>
       )}
 
