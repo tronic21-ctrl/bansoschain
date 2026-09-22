@@ -125,7 +125,9 @@ function ConnectButton({ lang }: { lang: Language }) {
           disabled={isSwitching}
           className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/20 transition-colors"
         >
-          {isSwitching ? "Switching…" : "Switch to BSC Testnet"}
+          {isSwitching
+            ? lang === "id" ? "Memindahkan…" : "Switching…"
+            : lang === "id" ? "Pindah ke BSC Testnet" : "Switch to BSC Testnet"}
         </button>
         <button
           onClick={() => open()}
@@ -259,7 +261,7 @@ function IndexerBadge({ source, lang }: { source: "live" | "fallback"; lang: Lan
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title="Indexer tidak terjangkau - ini data cadangan, bukan data real-time">
+      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title={copy[lang].fallbackBanner}>
       <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
       {copy[lang].fallback}
     </span>
@@ -665,7 +667,7 @@ export default function Home() {
   const [lang, setLang] = useState<Language>("id");
   const { isWrongNetwork, isSwitching, trySwitch, chainId } = useWrongNetwork();
 
-  useEffect(() => {
+    useEffect(() => {
     const storedLanguage = window.localStorage.getItem("bansoschain-language");
     if (storedLanguage === "id" || storedLanguage === "en") setLang(storedLanguage);
 
@@ -673,10 +675,23 @@ export default function Home() {
       const language = (event as CustomEvent<Language>).detail;
       if (language === "id" || language === "en") setLang(language);
     };
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "bansoschain-language" && (event.newValue === "id" || event.newValue === "en")) {
+        setLang(event.newValue);
+      }
+    };
 
     window.addEventListener("bansoschain-language", handleLanguageChange);
-    return () => window.removeEventListener("bansoschain-language", handleLanguageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("bansoschain-language", handleLanguageChange);
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["audit-trail"],

@@ -49,6 +49,10 @@ function useLanguage() {
     return () => window.removeEventListener("storage", handleChange);
   }, []);
 
+    useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   return [lang, (next: Language) => {
     localStorage.setItem("bansoschain-language", next);
     setLang(next);
