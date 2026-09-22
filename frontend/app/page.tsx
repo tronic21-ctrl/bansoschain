@@ -123,7 +123,7 @@ function ConnectButton({ lang }: { lang: Language }) {
         <button
           onClick={() => (switchChainAvailable ? trySwitch() : open({ view: "Networks" }))}
           disabled={isSwitching}
-          className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/20 transition-colors"
+          className="bg-accent-warning text-white px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/90 transition-colors"
         >
           {isSwitching
             ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -209,7 +209,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
           type="button"
           onClick={trySwitch}
           disabled={isSwitching}
-          className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
+          className="bg-accent-warning text-white px-4 py-2 font-mono text-sm hover:bg-accent-warning/90 transition-colors"
         >
           {isSwitching
             ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -237,10 +237,10 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
       )}
 
       {errorMessage && (
-        <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+        <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
           <div className="flex items-center justify-between font-semibold">
             <span>{lang === "id" ? "Gagal Mengajukan Sanggahan" : "Objection Failed"}</span>
-            <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
+            <button type="button" onClick={() => resetWrite()} className="text-white/70 hover:text-white underline text-[11px]">
               {lang === "id" ? "Tutup" : "Close"}
             </button>
           </div>
@@ -318,7 +318,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                 ? "BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa."
                 : "BanSOSChain is a blockchain-based social assistance transparency prototype. It shows how applications, approvals, objections, and disbursements can have an auditable history."}
             </p>
-            <p className="border border-accent-warning/40 bg-accent-warning/5 p-3 text-foreground/70">
+            <p className="bg-accent-warning p-3 text-white">
               {lang === "id"
                 ? "Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah."
                 : "The data shown is simulated for the hackathon demonstration and is not official government data."}
@@ -346,7 +346,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   : ["05", "Disbursed", "Funds actually move from the contract to the recipient's wallet."],
               ].map(([number, title, description]) => (
                 <li key={number} className="border border-border bg-background p-3">
-                  <div className="mb-2 font-mono text-xs text-accent-verified">{number}</div>
+                  <div className="mb-2 flex h-6 w-6 items-center justify-center bg-accent-verified font-mono text-xs text-white">{number}</div>
                   <div className="font-medium">{title}</div>
                   <p className="mt-1 text-xs text-foreground/60">{description}</p>
                 </li>
@@ -635,17 +635,17 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
           )}
 
           {preflightError && (
-            <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+            <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
               <div className="font-semibold">{lang === "id" ? "Tidak Bisa Dicairkan" : "Cannot Disburse"}</div>
               <p className="break-words leading-relaxed">{preflightError}</p>
             </div>
           )}
 
           {errorMessage && (
-            <div className="border border-accent-rejected/40 bg-accent-rejected/5 p-3 text-xs font-mono text-accent-rejected space-y-1">
+            <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
               <div className="flex items-center justify-between font-semibold">
                 <span>{lang === "id" ? "Gagal Mencairkan Dana" : "Disbursement Failed"}</span>
-                <button type="button" onClick={() => resetWrite()} className="text-foreground/60 hover:text-foreground underline text-[11px]">
+                <button type="button" onClick={() => resetWrite()} className="text-white/70 hover:text-white underline text-[11px]">
                   {lang === "id" ? "Tutup" : "Close"}
                 </button>
               </div>
@@ -708,10 +708,10 @@ export default function Home() {
             <Image
               src="/logo-wordmark-light.svg"
               alt="BanSOSChain"
-              width={230}
+              width={170}
               height={42}
               priority
-              className="h-auto w-[180px] sm:h-[42px] sm:w-auto"
+              className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
             />
           </a>
           {data && (
@@ -737,8 +737,8 @@ export default function Home() {
         </div>
       </div>
 
-      {isWrongNetwork && (
-        <div className="border border-accent-warning/40 bg-accent-warning/5 p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-accent-warning">
+        {isWrongNetwork && (
+        <div className="bg-accent-warning p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <span>
             {lang === "id"
               ? <>Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSOSChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.</>
@@ -747,7 +747,7 @@ export default function Home() {
           <button
             onClick={trySwitch}
             disabled={isSwitching}
-            className="px-3 py-1.5 bg-accent-warning text-background font-mono text-xs whitespace-nowrap transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 bg-white text-accent-warning font-mono text-xs whitespace-nowrap transition-colors disabled:opacity-50 hover:bg-background"
           >
             {isSwitching
               ? lang === "id" ? "Memindahkan…" : "Switching…"
