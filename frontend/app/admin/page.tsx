@@ -140,7 +140,7 @@ function StatusForm({ lang }: { lang: Language }) {
     <div className="border-t border-border pt-6 mt-6">
       <h2 className="font-serif text-xl mb-1">{copy[lang].update}</h2>
       {pending && pending.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-4 animate-fade-slide-up">
           <p className="text-xs text-foreground/60 mb-1">{copy[lang].pending}</p>
           {pending.map((h) => (
             <div key={h} className="flex justify-between py-1.5 border-b border-border text-sm font-mono">
@@ -196,7 +196,19 @@ export default function AdminPage() {
       <button onClick={trySwitch} disabled={isSwitching} className={`${btnBase} border-accent-warning text-accent-warning`}>{isSwitching ? (lang === "id" ? "Memindahkan…" : "Switching…") : copy[lang].switch}</button>
     </main>
   );
-  if (checking) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-mono text-sm text-foreground/50">{copy[lang].checking}</p></main>;
+  if (checking) return (
+    <main className="max-w-2xl mx-auto px-4 py-8">
+      <LanguageSwitch lang={lang} setLang={setLang} />
+      <div className="flex min-h-[40dvh] flex-col items-center justify-center gap-3">
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground/50"
+          role="status"
+          aria-label={lang === "id" ? "Memuat" : "Loading"}
+        />
+        <p className="font-mono text-sm text-foreground/50">{copy[lang].checking}</p>
+      </div>
+    </main>
+  );
   if (!isVerifierWallet) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-mono text-sm text-accent-rejected">{copy[lang].notVerifier}</p></main>;
 
   return (
@@ -208,13 +220,29 @@ export default function AdminPage() {
           <a href="/" className="text-xs font-mono text-foreground/60 hover:text-foreground shrink-0">{copy[lang].back}</a>
         </div>
       </div>
-      <div className="border border-border bg-surface p-6">
+      <div className="border border-border bg-surface p-6 animate-fade-slide-up">
         <RegisterForm lang={lang} />
         <StatusForm lang={lang} />
         <p className="text-xs text-foreground/50 mt-8 pt-4 border-t border-border">
           {copy[lang].activeProgram}: 0xb34b13…50ab (hardcode DEFAULT_PROGRAM_ID)
         </p>
       </div>
+
+      <style jsx global>{`
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-slide-up {
+          animation: fadeSlideUp 0.4s ease-out;
+        }
+      `}</style>
     </main>
   );
 }

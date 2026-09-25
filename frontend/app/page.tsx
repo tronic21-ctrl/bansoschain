@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useAppKit } from "@reown/appkit/react";
@@ -401,8 +401,28 @@ function MenuButton({
   onToggle: () => void;
   onAbout: () => void;
 }) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onToggle();
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onToggle();
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onToggle]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
         type="button"
         onClick={onToggle}
@@ -414,7 +434,7 @@ function MenuButton({
         <span aria-hidden="true">☰</span>
       </button>
       {open && (
-        <div className="absolute right-0 top-12 z-40 w-56 border border-border bg-surface p-3 shadow-lg" role="menu">
+        <div className="absolute right-0 top-12 z-40 w-56 border border-border bg-surface p-3 shadow-lg animate-menu-pop" role="menu">
           <div className="mb-2 border-b border-border pb-2">
             <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-foreground/50">{copy[lang].language}</span>
             <div className="flex gap-1">
@@ -444,6 +464,22 @@ function MenuButton({
           </button>
         </div>
       )}
+      <style jsx>{`
+        @keyframes menuPop {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-menu-pop {
+          transform-origin: top right;
+          animation: menuPop 0.15s ease-out;
+        }
+      `}</style>
     </div>
   );
 }
@@ -530,7 +566,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
       </div>
 
       <div className="space-y-1 font-mono text-sm text-foreground/70 break-all">
-        <div>{row.idHash}</div>
+        <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}</div>
         {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}</div>}
       </div>
 
@@ -665,6 +701,7 @@ export default function Home() {
   const [showPrototypeInfo, setShowPrototypeInfo] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [lang, setLang] = useState<Language>("id");
+  const [searchQuery, setSearchQuery] = useState("");
   const { isWrongNetwork, isSwitching, trySwitch, chainId } = useWrongNetwork();
 
     useEffect(() => {
@@ -699,6 +736,17 @@ export default function Home() {
     select: (result) => ({ rows: buildAuditRows(result.data), source: result.source }),
     refetchInterval: 15_000,
   });
+
+  const filteredRows = data
+    ? data.rows.filter((row) => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return true;
+        return (
+          row.idHash.toLowerCase().includes(q) ||
+          statusLabel(row.status, lang).toLowerCase().includes(q)
+        );
+      })
+    : [];
 
   return (
     <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
@@ -762,16 +810,36 @@ export default function Home() {
         </div>
       )}
 
-      {isLoading && <p className="font-mono text-sm text-foreground/50">{lang === "id" ? "Memuat data…" : "Loading data…"}</p>}
+            {isLoading && (
+        <div className="flex min-h-[60dvh] flex-col items-center justify-center gap-3">
+          <div
+            className="h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground/50"
+            role="status"
+            aria-label={lang === "id" ? "Memuat" : "Loading"}
+          />
+          <p className="font-mono text-sm text-foreground/50">
+            {lang === "id" ? "Memuat data…" : "Loading data…"}
+          </p>
+        </div>
+      )}
       {error && <p className="font-mono text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
 
       {data && (
         <>
+          <div className="space-y-6 animate-fade-slide-up">
           <SummaryStrip rows={data.rows} lang={lang} />
 
           {[...new Set(data.rows.map((r) => r.programId).filter(Boolean))].map((pid) => (
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} lang={lang} />
           ))}
+
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={lang === "id" ? "Cari ID hash atau status…" : "Search ID hash or status…"}
+            className="w-full border border-border bg-transparent p-2 font-mono text-sm placeholder:text-foreground/40"
+          />
 
           <div className="w-full min-w-0">
             <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
@@ -783,14 +851,18 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {data.rows.length === 0 ? (
+                {filteredRows.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="p-6 text-center text-foreground/50">
-                      {copy[lang].empty}
+                      {data.rows.length === 0
+                        ? copy[lang].empty
+                        : lang === "id"
+                          ? "Tidak ada hasil yang cocok."
+                          : "No matching results."}
                     </td>
                   </tr>
                 ) : (
-                  data.rows.map((row) => (
+                  filteredRows.map((row) => (
                     <tr
                       key={row.idHash}
                       onClick={() => setSelected(row)}
@@ -823,12 +895,29 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+          </div>
 
       {selected && <DetailPanel row={selected} lang={lang} source={data.source} onClose={() => setSelected(null)} />}
         </>
       )}
 
       {showPrototypeInfo && <PrototypeInfo lang={lang} onClose={() => setShowPrototypeInfo(false)} />}
+
+      <style jsx>{`
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-slide-up {
+          animation: fadeSlideUp 0.4s ease-out;
+        }
+      `}</style>
     </main>
   );
 }
