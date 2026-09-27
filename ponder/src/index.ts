@@ -53,14 +53,21 @@ ponder.on("DisbursementPool:PencairanDisetujui", async ({ event, context }) => {
 });
 
 ponder.on("DisbursementPool:DanaDicairkan", async ({ event, context }) => {
-  await context.db.insert(disbursements).values({
-    id: `${event.log.id}`,
-    programId: event.args.programId,
-    idHash: event.args.idHash,
-    amount: event.args.amount,
-    timestamp: event.args.timestamp,
-    txHash: event.transaction.hash,
-  });
+  try {
+    await context.db.insert(disbursements).values({
+      id: `${event.transaction.hash}-${event.log.index}`,
+      programId: event.args.programId,
+      idHash: event.args.idHash,
+      amount: event.args.amount,
+      timestamp: event.args.timestamp,
+      txHash: event.transaction.hash,
+    });
+  } catch (err) {
+    if (String(err).includes("duplicate key")) {
+      return;
+    }
+    throw err;
+  }
 });
 
 ponder.on("DisbursementPool:SanggahanDiajukan", async ({ event, context }) => {
