@@ -72,7 +72,7 @@ ponder.on("DisbursementPool:DanaDicairkan", async ({ event, context }) => {
 
 ponder.on("DisbursementPool:SanggahanDiajukan", async ({ event, context }) => {
   await context.db.insert(disputes).values({
-    id: `${event.log.id}`,
+    id: `${event.transaction.hash}-${event.log.index}`,
     programId: event.args.programId,
     idHash: event.args.idHash,
     pelapor: event.args.pelapor,
