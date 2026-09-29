@@ -836,13 +836,20 @@ export default function Home() {
             <ProgramSummaryCard key={pid} programId={pid as `0x${string}`} lang={lang} />
           ))}
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={lang === "id" ? "Cari ID hash atau status…" : "Search ID hash or status…"}
-            className="w-full border border-border bg-transparent p-2 font-mono text-sm placeholder:text-foreground/40"
-          />
+          <div className="relative w-full">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg className="h-4 w-4 text-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={lang === "id" ? "Cari ID hash atau status…" : "Search ID hash or status…"}
+              className="w-full border border-border bg-surface py-3 pl-10 pr-4 font-mono text-sm placeholder:text-foreground/40 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-colors"
+            />
+          </div>
 
           <div className="w-full min-w-0">
             <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
