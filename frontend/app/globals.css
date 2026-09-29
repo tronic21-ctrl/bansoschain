@@ -6,6 +6,7 @@
   --foreground: #1b1d1a;
   --border: #d6d6d0;
   --accent-verified: #1f6e5c;
+  --accent-verified-dark: #2fa78c;
   --accent-rejected: #a8402f;
   --accent-warning: #96691c;
 }
@@ -16,6 +17,7 @@
   --color-foreground: var(--foreground);
   --color-border: var(--border);
   --color-accent-verified: var(--accent-verified);
+  --color-accent-verified-dark: var(--accent-verified-dark);
   --color-accent-rejected: var(--accent-rejected);
   --color-accent-warning: var(--accent-warning);
   --font-sans: var(--font-source-serif), ui-serif, Georgia, Cambria, serif;

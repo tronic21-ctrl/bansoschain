@@ -131,7 +131,7 @@ function ConnectButton({ lang }: { lang: Language }) {
         </button>
         <button
           onClick={() => open()}
-          className="rounded-none border border-border px-3 py-1.5 font-mono text-xs hover:bg-foreground hover:text-background transition-colors"
+          className="rounded-none border border-background/40 px-3 py-1.5 font-mono text-xs text-background hover:bg-background hover:text-foreground transition-colors"
         >
           {address ? shortenHex(address) : "Wallet"}
         </button>
@@ -142,7 +142,7 @@ function ConnectButton({ lang }: { lang: Language }) {
   return (
     <button
       onClick={() => open()}
-      className="rounded-none border border-border px-4 py-2 font-mono text-sm hover:bg-foreground hover:text-background transition-colors"
+      className="rounded-none border border-background/40 px-4 py-2 font-mono text-sm text-background hover:bg-background hover:text-foreground transition-colors"
     >
       {isConnected && address ? shortenHex(address) : copy[lang].connect}
     </button>
@@ -254,15 +254,15 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
 function IndexerBadge({ source, lang }: { source: "live" | "fallback"; lang: Language }) {
   if (source === "live") {
     return (
-      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent-verified">
-        <span className="h-1.5 w-1.5 rounded-full bg-accent-verified" />
+      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent-verified-dark">
+        <span className="h-1.5 w-1.5 rounded-full bg-accent-verified-dark" />
         {copy[lang].live}
       </span>
     );
   }
   return (
-      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/50" title={copy[lang].fallbackBanner}>
-      <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
+    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-background/70" title={copy[lang].fallbackBanner}>
+      <span className="h-1.5 w-1.5 rounded-full bg-background/50" />
       {copy[lang].fallback}
     </span>
   );
@@ -429,7 +429,7 @@ function MenuButton({
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={copy[lang].menu}
-        className="flex h-10 w-10 items-center justify-center border border-border font-mono text-lg hover:bg-foreground hover:text-background"
+        className="flex h-10 w-10 items-center justify-center border border-background/40 font-mono text-lg text-background hover:bg-background hover:text-foreground"
       >
         <span aria-hidden="true">☰</span>
       </button>
@@ -748,43 +748,46 @@ export default function Home() {
       })
     : [];
 
-  return (
-    <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
-      <div className="mb-6 flex min-w-0 flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <a href="/" className="flex min-w-0 items-center">
-            <Image
-              src="/logo-wordmark-light.svg"
-              alt="BanSOSChain"
-              width={170}
-              height={42}
-              priority
-              className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
+    return (
+    <>
+      <header className="w-full border-b-4 border-accent-verified bg-foreground">
+        <div className="mx-auto flex min-w-0 max-w-4xl flex-col justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
+            <a href="/" className="flex min-w-0 items-center">
+              <Image
+                src="/logo-wordmark-dark.svg"
+                alt="BanSOSChain"
+                width={170}
+                height={42}
+                priority
+                className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
+              />
+            </a>
+            {data && (
+              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
+                <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background/70">
+                  {copy[lang].prototype}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex min-w-0 w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+            <ConnectButton lang={lang} />
+            <MenuButton
+              lang={lang}
+              open={menuOpen}
+              onToggle={() => setMenuOpen((value) => !value)}
+              onAbout={() => {
+                setMenuOpen(false);
+                setShowPrototypeInfo(true);
+              }}
             />
-          </a>
-          {data && (
-            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
-              <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-foreground/50">
-                {copy[lang].prototype}
-              </span>
-            </div>
-          )}
+          </div>
         </div>
-        <div className="flex min-w-0 w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
-          <ConnectButton lang={lang} />
-          <MenuButton
-            lang={lang}
-            open={menuOpen}
-            onToggle={() => setMenuOpen((value) => !value)}
-            onAbout={() => {
-              setMenuOpen(false);
-              setShowPrototypeInfo(true);
-            }}
-          />
-        </div>
-      </div>
+      </header>
 
+      <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
         {isWrongNetwork && (
         <div className="bg-accent-warning p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <span>
@@ -844,7 +847,7 @@ export default function Home() {
           <div className="w-full min-w-0">
             <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-foreground/50">
+                <tr className="bg-foreground text-left text-background">
                   <th className="w-[37%] p-3 font-normal">{copy[lang].recipient}</th>
                   <th className="w-[37%] p-3 font-normal">{copy[lang].status}</th>
                   <th className="w-[26%] p-3 font-normal">{copy[lang].amount}</th>
@@ -897,7 +900,10 @@ export default function Home() {
           </div>
           </div>
 
-      {selected && <DetailPanel row={selected} lang={lang} source={data.source} onClose={() => setSelected(null)} />}
+          {selected && (() => {
+            const liveRow = data.rows.find((r) => r.idHash === selected.idHash) ?? selected;
+            return <DetailPanel row={liveRow} lang={lang} source={data.source} onClose={() => setSelected(null)} />;
+          })()}
         </>
       )}
 
@@ -914,10 +920,11 @@ export default function Home() {
             transform: translateY(0);
           }
         }
-        .animate-fade-slide-up {
+          .animate-fade-slide-up {
           animation: fadeSlideUp 0.4s ease-out;
         }
       `}</style>
-    </main>
+      </main>
+    </>
   );
 }
