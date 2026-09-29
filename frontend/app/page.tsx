@@ -311,75 +311,73 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
         </div>
 
         <div className="space-y-6 text-sm leading-relaxed">
-          <section className="space-y-2">
+          <section className="space-y-3">
             <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Tentang prototype" : "About the prototype"}</h3>
-            <p>
+            <p className="text-base font-serif">
               {lang === "id"
-                ? "BanSOSChain adalah prototype transparansi bantuan sosial berbasis blockchain. Prototype ini menunjukkan bagaimana pengajuan, persetujuan, sanggahan, dan pencairan dapat memiliki riwayat yang mudah diperiksa."
-                : "BanSOSChain is a blockchain-based social assistance transparency prototype. It shows how applications, approvals, objections, and disbursements can have an auditable history."}
+                ? "BanSOSChain adalah gambaran masa depan penyaluran bantuan sosial. Setiap proses—dari pengajuan hingga pencairan dana—dicatat permanen di sistem dan bisa diawasi oleh siapa saja, menutup celah korupsi."
+                : "BanSOSChain is a vision of the future of social assistance. Every step—from application to disbursement—is permanently recorded and can be monitored by anyone, closing loopholes for corruption."}
             </p>
-            <p className="bg-accent-warning p-3 text-white">
+            <p className="bg-accent-warning p-3 text-white border-l-4 border-black/20">
               {lang === "id"
-                ? "Data yang ditampilkan saat ini adalah data simulasi untuk demonstrasi hackathon, bukan data resmi pemerintah."
-                : "The data shown is simulated for the hackathon demonstration and is not official government data."}
+                ? "Data yang ditampilkan saat ini hanyalah data simulasi untuk keperluan lomba (hackathon), bukan data resmi pemerintah."
+                : "The data currently shown is simulated for the hackathon, not official government data."}
             </p>
           </section>
 
-          <section className="space-y-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Cara kerja alur bantuan" : "How the assistance flow works"}</h3>
-            <ol className="grid gap-3 sm:grid-cols-5">
+          <section className="space-y-4 pt-4">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Cara Kerja BanSOSChain" : "How BanSOSChain Works"}</h3>
+            <div className="space-y-3">
               {[
                 lang === "id"
-                  ? ["01", "Diajukan", "Data bantuan didaftarkan."]
-                  : ["01", "Submitted", "Assistance data is registered."],
+                  ? ["01", "Pengajuan", "Data calon penerima bantuan dimasukkan ke dalam sistem secara aman."]
+                  : ["01", "Registration", "Beneficiary data is securely registered into the system."],
                 lang === "id"
-                  ? ["02", "Dinilai AI", "Model AI menilai kelayakan, verdiknya ditulis on-chain."]
-                  : ["02", "AI-reviewed", "An AI model assesses eligibility; the verdict is written on-chain."],
+                  ? ["02", "Verifikasi Cerdas", "Sistem AI mengecek kelayakan data agar bantuan benar-benar tepat sasaran."]
+                  : ["02", "Smart Verification", "An AI system verifies the data to ensure assistance reaches the right people."],
                 lang === "id"
-                  ? ["03", "Disetujui", "Pengajuan melewati verifikasi, pencairan disetujui."]
-                  : ["03", "Approved", "The application passes verification and disbursement is approved."],
+                  ? ["03", "Persetujuan", "Jika layak, pengajuan disetujui dan dicatat permanen dalam sistem."]
+                  : ["03", "Approval", "If eligible, the application is approved and permanently recorded."],
                 lang === "id"
-                  ? ["04", "Masa sanggah", "Keberatan dapat diajukan selama 24 jam."]
-                  : ["04", "Objection period", "Objections can be submitted during a 24-hour window."],
+                  ? ["04", "Masa Sanggah", "Masyarakat diberi waktu 24 jam untuk melapor jika ada penerima yang fiktif atau salah sasaran."]
+                  : ["04", "Public Review", "The public is given a 24-hour window to report any fictitious or ineligible recipients."],
                 lang === "id"
-                  ? ["05", "Dicairkan", "Dana benar-benar berpindah dari kontrak ke wallet penerima."]
-                  : ["05", "Disbursed", "Funds actually move from the contract to the recipient's wallet."],
+                  ? ["05", "Dana Cair", "Bantuan ditransfer langsung ke dompet digital penerima, tanpa perantara."]
+                  : ["05", "Disbursement", "Funds are transferred directly to the recipient's digital wallet, with no middlemen."],
               ].map(([number, title, description]) => (
-                <li key={number} className="border border-border bg-background p-3">
-                  <div className="mb-2 flex h-6 w-6 items-center justify-center bg-accent-verified font-mono text-xs text-white">{number}</div>
-                  <div className="font-medium">{title}</div>
-                  <p className="mt-1 text-xs text-foreground/60">{description}</p>
-                </li>
+                <div key={number} className="flex gap-4 border border-border bg-background p-3 sm:p-4 items-start shadow-sm">
+                  <div className="flex shrink-0 h-8 w-8 items-center justify-center bg-accent-verified font-mono text-sm text-white">
+                    {number}
+                  </div>
+                  <div>
+                    <div className="font-serif font-medium text-base mb-1">{title}</div>
+                    <p className="text-sm text-foreground/70">{description}</p>
+                  </div>
+                </div>
               ))}
-            </ol>
+            </div>
           </section>
 
-          <section className="space-y-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Istilah teknis" : "Technical terms"}</h3>
-            <dl className="grid gap-3 sm:grid-cols-2">
+          <section className="space-y-4 pt-4 border-t border-border mt-6">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Keunggulan Sistem Ini" : "Key Benefits"}</h3>
+            <dl className="grid gap-4 sm:grid-cols-2">
               {[
                 lang === "id"
-                  ? ["Wallet", "Akun digital di blockchain. Siapa pun bisa memicu pencairan, tapi dana selalu terkirim ke wallet penerima yang tercatat."]
-                  : ["Wallet", "A blockchain account. Anyone can trigger a disbursement, but funds always go to the recipient wallet on record."],
+                  ? ["Transparan & Anti-Korupsi", "Seluruh aliran dana (on-chain) dikunci permanen. Tidak ada data yang bisa diam-diam dihapus atau diubah oknum."]
+                  : ["Transparent & Anti-Corruption", "All fund flows (on-chain) are permanently locked. No data can be secretly deleted or altered by bad actors."],
                 lang === "id"
-                  ? ["ID Hash", "Kode acak pengganti identitas penerima, dipakai agar data tetap privat di blockchain publik."]
-                  : ["ID Hash", "A randomized code standing in for a recipient's identity, keeping data private on a public blockchain."],
+                  ? ["Privasi Tetap Terjaga", "Nama asli penerima tidak disebar ke publik, melainkan disamarkan dengan kode rahasia (ID Hash)."]
+                  : ["Privacy Protected", "Real names are not exposed to the public, but disguised with a secret code (ID Hash)."],
                 lang === "id"
-                  ? ["Address", "Identitas digital akun yang tercatat dalam sistem."]
-                  : ["Address", "The digital identity of an account recorded in the system."],
+                  ? ["Langsung ke Penerima", "Dana tidak mengendap di pihak ketiga. Sistem mentransfer dana digital langsung ke akun (wallet) penerima."]
+                  : ["Direct to Recipient", "Funds do not sit with third parties. The system transfers digital funds directly to the recipient's account (wallet)."],
                 lang === "id"
-                  ? ["On-chain", "Data atau riwayat yang dicatat pada jaringan blockchain."]
-                  : ["On-chain", "Data or history recorded on a blockchain network."],
-                lang === "id"
-                  ? ["mDANA", "Satuan dana atau token simulasi dalam prototype, bukan otomatis Rupiah."]
-                  : ["mDANA", "A simulated fund or token unit in this prototype, not automatically Indonesian Rupiah."],
-                lang === "id"
-                  ? ["Audit trail", "Riwayat perubahan status pengajuan yang dapat diperiksa."]
-                  : ["Audit trail", "A reviewable history of application status changes."],
-              ].map(([term, description]) => (
-                <div key={term} className="border-b border-border pb-2">
-                  <dt className="font-mono text-xs text-foreground/70">{term}</dt>
-                  <dd className="mt-1 text-xs text-foreground/60">{description}</dd>
+                  ? ["Jejak Terbuka (Audit Trail)", "Siapa pun, termasuk masyarakat dan pemerintah, bisa memantau status bantuan secara real-time."]
+                  : ["Open Audit Trail", "Anyone, including the public and government, can monitor the assistance status in real-time."],
+              ].map(([title, desc]) => (
+                <div key={title} className="border-l-2 border-accent-verified pl-3">
+                  <dt className="font-serif font-medium text-base mb-1">{title}</dt>
+                  <dd className="text-sm text-foreground/70">{desc}</dd>
                 </div>
               ))}
             </dl>
