@@ -751,10 +751,10 @@ export default function Home() {
     return (
     <>
       <header className="w-full border-b-4 border-accent-verified bg-foreground">
-        <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-y-3 px-4 py-4">
+        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-y-4 gap-x-2 px-4 py-4">
           
-          {/* Left group: Logo + Badges */}
-          <div className="flex flex-wrap items-center gap-3">
+          {/* 1. Logo (Mobile: Top Left | Desktop: Far Left) */}
+          <div className="flex min-w-0 items-center order-1">
             <a href="/" className="flex min-w-0 items-center">
               <Image
                 src="/logo-wordmark-dark.svg"
@@ -765,22 +765,10 @@ export default function Home() {
                 className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
               />
             </a>
-            {data && (
-              <div className="flex items-center gap-x-3 gap-y-1">
-                <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
-                <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background/70">
-                  {copy[lang].prototype}
-                </span>
-              </div>
-            )}
           </div>
 
-          {/* Spacer — pushes right cluster to far right */}
-          <div className="flex-1" />
-
-          {/* Right cluster: ConnectButton + MenuButton */}
-          <div className="flex items-center gap-2">
-            <ConnectButton lang={lang} />
+          {/* 2. Menu Button (Mobile: Top Right | Desktop: Far Right) */}
+          <div className="flex items-center order-2 sm:order-4">
             <MenuButton
               lang={lang}
               open={menuOpen}
@@ -791,6 +779,27 @@ export default function Home() {
               }}
             />
           </div>
+
+          {/* Line Break for Mobile only */}
+          <div className="w-full order-3 sm:hidden" />
+
+          {/* 3. Badges (Mobile: Bottom Left | Desktop: Middle Left) */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 order-4 sm:order-2 sm:ml-4 sm:flex-1">
+            {data && (
+              <>
+                <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
+                <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background/70">
+                  {copy[lang].prototype}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* 4. Connect Button (Mobile: Bottom Right | Desktop: Middle Right) */}
+          <div className="flex items-center order-5 sm:order-3">
+            <ConnectButton lang={lang} />
+          </div>
+
         </div>
       </header>
 
