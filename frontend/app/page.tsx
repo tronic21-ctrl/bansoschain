@@ -751,63 +751,46 @@ export default function Home() {
     return (
     <>
       <header className="w-full border-b-4 border-accent-verified bg-foreground">
-        <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-y-3 px-4 py-4">
           
-          {/* Row 1 (Mobile) / Left (Desktop) */}
-          <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-3">
-            <a href="/" className="flex min-w-0 items-center">
-              <Image
-                src="/logo-wordmark-dark.svg"
-                alt="BanSOSChain"
-                width={170}
-                height={42}
-                priority
-                className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
-              />
-            </a>
-            
-            {/* Mobile Menu */}
-            <div className="block sm:hidden">
-              <MenuButton
-                lang={lang}
-                open={menuOpen}
-                onToggle={() => setMenuOpen((value) => !value)}
-                onAbout={() => {
-                  setMenuOpen(false);
-                  setShowPrototypeInfo(true);
-                }}
-              />
-            </div>
+          {/* Logo — always far left */}
+          <a href="/" className="flex min-w-0 items-center">
+            <Image
+              src="/logo-wordmark-dark.svg"
+              alt="BanSOSChain"
+              width={170}
+              height={42}
+              priority
+              className="h-auto w-[133px] sm:h-[42px] sm:w-auto"
+            />
+          </a>
+
+          {/* Spacer pushes right items to far right */}
+          <div className="flex-1" />
+
+          {/* Right cluster: ConnectButton + MenuButton */}
+          <div className="flex items-center gap-2 order-1 sm:order-3">
+            <ConnectButton lang={lang} />
+            <MenuButton
+              lang={lang}
+              open={menuOpen}
+              onToggle={() => setMenuOpen((value) => !value)}
+              onAbout={() => {
+                setMenuOpen(false);
+                setShowPrototypeInfo(true);
+              }}
+            />
           </div>
 
-          {/* Row 2 (Mobile) / Right (Desktop) */}
-          <div className="flex w-full flex-wrap items-center justify-between gap-4 sm:w-auto sm:flex-1 sm:flex-nowrap sm:justify-end">
-            {data && (
-              <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 sm:mr-auto">
-                <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
-                <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background/70">
-                  {copy[lang].prototype}
-                </span>
-              </div>
-            )}
-            
-            <div className="flex items-center gap-2">
-              <ConnectButton lang={lang} />
-              
-              {/* Desktop Menu */}
-              <div className="hidden sm:block">
-                <MenuButton
-                  lang={lang}
-                  open={menuOpen}
-                  onToggle={() => setMenuOpen((value) => !value)}
-                  onAbout={() => {
-                    setMenuOpen(false);
-                    setShowPrototypeInfo(true);
-                  }}
-                />
-              </div>
+          {/* Badges — full width row on mobile, inline on desktop */}
+          {data && (
+            <div className="flex w-full items-center gap-x-3 gap-y-1 order-2 sm:order-2 sm:ml-3 sm:w-auto">
+              <span className="min-w-0"><IndexerBadge source={data.source} lang={lang} /></span>
+              <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background/70">
+                {copy[lang].prototype}
+              </span>
             </div>
-          </div>
+          )}
         </div>
       </header>
 
