@@ -315,10 +315,10 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
             <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Tentang prototype" : "About the prototype"}</h3>
             <p className="text-base font-serif">
               {lang === "id"
-                ? "BanSOSChain adalah gambaran masa depan penyaluran bantuan sosial. Setiap proses—dari pengajuan hingga pencairan dana—dicatat permanen di sistem dan bisa diawasi oleh siapa saja, menutup celah korupsi."
-                : "BanSOSChain is a vision of the future of social assistance. Every step—from application to disbursement—is permanently recorded and can be monitored by anyone, closing loopholes for corruption."}
+                ? "BanSOSChain adalah gambaran masa depan penyaluran bantuan sosial. Setiap proses dari pengajuan hingga pencairan dana dicatat permanen di sistem dan bisa diawasi oleh siapa saja, membuat penyimpangan lebih sulit disembunyikan."
+                : "BanSOSChain is a vision of the future of social assistance. Every step, from application to disbursement, is permanently recorded and can be monitored by anyone, making misuse harder to hide."}
             </p>
-            <p className="bg-accent-warning p-3 text-white border-l-4 border-black/20">
+            <p className="bg-accent-warning p-3 text-white">
               {lang === "id"
                 ? "Data yang ditampilkan saat ini hanyalah data simulasi untuk keperluan lomba (hackathon), bukan data resmi pemerintah."
                 : "The data currently shown is simulated for the hackathon, not official government data."}
@@ -333,8 +333,8 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["01", "Pengajuan", "Data calon penerima bantuan dimasukkan ke dalam sistem secara aman."]
                   : ["01", "Registration", "Beneficiary data is securely registered into the system."],
                 lang === "id"
-                  ? ["02", "Verifikasi Cerdas", "Sistem AI mengecek kelayakan data agar bantuan benar-benar tepat sasaran."]
-                  : ["02", "Smart Verification", "An AI system verifies the data to ensure assistance reaches the right people."],
+                  ? ["02", "Verifikasi Cerdas", "Sistem AI membantu menilai kelayakan data, hasilnya tetap bisa ditinjau ulang oleh verifier manusia."]
+                  : ["02", "Smart Verification", "An AI system helps assess eligibility, with results a human verifier can still review."],
                 lang === "id"
                   ? ["03", "Persetujuan", "Jika layak, pengajuan disetujui dan dicatat permanen dalam sistem."]
                   : ["03", "Approval", "If eligible, the application is approved and permanently recorded."],
@@ -345,7 +345,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["05", "Dana Cair", "Bantuan ditransfer langsung ke dompet digital penerima, tanpa perantara."]
                   : ["05", "Disbursement", "Funds are transferred directly to the recipient's digital wallet, with no middlemen."],
               ].map(([number, title, description]) => (
-                <div key={number} className="flex gap-4 border border-border bg-background p-3 sm:p-4 items-start shadow-sm">
+                <div key={number} className="flex gap-4 border border-border bg-background p-3 sm:p-4 items-start">
                   <div className="flex shrink-0 h-8 w-8 items-center justify-center bg-accent-verified font-mono text-sm text-white">
                     {number}
                   </div>
@@ -366,8 +366,8 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["Transparan & Anti-Korupsi", "Seluruh aliran dana (on-chain) dikunci permanen. Tidak ada data yang bisa diam-diam dihapus atau diubah oknum."]
                   : ["Transparent & Anti-Corruption", "All fund flows (on-chain) are permanently locked. No data can be secretly deleted or altered by bad actors."],
                 lang === "id"
-                  ? ["Privasi Tetap Terjaga", "Nama asli penerima tidak disebar ke publik, melainkan disamarkan dengan kode rahasia (ID Hash)."]
-                  : ["Privacy Protected", "Real names are not exposed to the public, but disguised with a secret code (ID Hash)."],
+                  ? ["Identitas Terlindungi di Chain", "Setiap penerima dikenali lewat kode acak (ID Hash) di catatan on-chain, bukan lewat NIK atau data pribadi langsung."]
+                  : ["On-Chain Identity Protection", "Each recipient is identified by a random code (ID Hash) on-chain, not by their national ID or personal data directly."],
                 lang === "id"
                   ? ["Langsung ke Penerima", "Dana tidak mengendap di pihak ketiga. Sistem mentransfer dana digital langsung ke akun (wallet) penerima."]
                   : ["Direct to Recipient", "Funds do not sit with third parties. The system transfers digital funds directly to the recipient's account (wallet)."],
@@ -375,7 +375,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["Jejak Terbuka (Audit Trail)", "Siapa pun, termasuk masyarakat dan pemerintah, bisa memantau status bantuan secara real-time."]
                   : ["Open Audit Trail", "Anyone, including the public and government, can monitor the assistance status in real-time."],
               ].map(([title, desc]) => (
-                <div key={title} className="border-l-2 border-accent-verified pl-3">
+                <div key={title} className="border-t border-border pt-3">
                   <dt className="font-serif font-medium text-base mb-1">{title}</dt>
                   <dd className="text-sm text-foreground/70">{desc}</dd>
                 </div>
