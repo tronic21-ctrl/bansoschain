@@ -90,6 +90,16 @@ function proofLabel(label: string, lang: Language) {
   }[label] ?? label;
 }
 
+function maskName(fullName: string): string {
+  return fullName
+    .split(" ")
+    .map((word) => {
+      if (word.length <= 2) return word;
+      return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
+    })
+    .join(" ");
+}
+
 function AdminLink({ lang }: { lang: Language }) {
   const { address, isConnected } = useAccount();
   const { data: isVerifierWallet } = useReadContract({
@@ -366,8 +376,8 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   ? ["Transparan & Anti-Korupsi", "Seluruh aliran dana (on-chain) dikunci permanen. Tidak ada data yang bisa diam-diam dihapus atau diubah oknum."]
                   : ["Transparent & Anti-Corruption", "All fund flows (on-chain) are permanently locked. No data can be secretly deleted or altered by bad actors."],
                 lang === "id"
-                  ? ["Identitas Terlindungi di Chain", "Setiap penerima dikenali lewat kode acak (ID Hash) di catatan on-chain, bukan lewat NIK atau data pribadi langsung."]
-                  : ["On-Chain Identity Protection", "Each recipient is identified by a random code (ID Hash) on-chain, not by their national ID or personal data directly."],
+                  ? ["Identitas Terlindungi", "Nama penerima ditampilkan tersamar (seperti di cek bansos resmi), dan setiap penerima dikenali di rantai lewat kode acak (ID Hash), bukan NIK langsung."]
+                  : ["Identity Protection", "Recipient names are shown masked (like the official aid-checking portal), and each recipient is identified on-chain by a random code (ID Hash), not by their national ID directly."],
                 lang === "id"
                   ? ["Langsung ke Penerima", "Dana tidak mengendap di pihak ketiga. Sistem mentransfer dana digital langsung ke akun (wallet) penerima."]
                   : ["Direct to Recipient", "Funds do not sit with third parties. The system transfers digital funds directly to the recipient's account (wallet)."],
@@ -581,7 +591,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
               return (
                 <div key={i} className="flex flex-col items-start gap-0 text-sm leading-relaxed sm:flex-row sm:gap-2">
                   <span className="text-foreground/80 sm:w-[140px] sm:shrink-0">{proofLabel(key, lang)}:</span>
-                  <span className="min-w-0 break-words text-foreground">{value}</span>
+                  <span className="min-w-0 break-words text-foreground">{key === "Nama" ? maskName(value) : value}</span>
                 </div>
               );
             }

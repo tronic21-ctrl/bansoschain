@@ -12,11 +12,11 @@ Built for Indonesia Web3 Hackathon 2026.
 
 ## Problem
 
-Social-aid programs in Indonesia face recurring allegations of misuse, with little public accountability. One live example: in Maluku Tengah, prosecutors opened a corruption investigation in October 2025 into a 2023 regional social-aid program worth IDR 9.7 billion (about USD 540,000). Investigators allege the aid applications were not evaluated by the responsible agency, as regulations require. As of mid-2026, more than 400 people had been questioned, no suspect had been publicly named, and the state's loss had not yet been calculated. Meanwhile, the national aid-checking portal (cekbansos.kemensos.go.id) shows only a recipient's name, income decile, and status — no amount, and no proof that a disbursement happened. Citizens and independent auditors cannot verify a disbursement claim on their own.
+Social-aid programs in Indonesia face recurring allegations of misuse, with little public accountability. One live example: in Maluku Tengah, prosecutors opened a corruption investigation in October 2025 into a 2023 regional social-aid program worth IDR 9.7 billion (about USD 540,000). Investigators allege the aid applications were not evaluated by the responsible agency, as regulations require. As of mid-2026, more than 400 people had been questioned, no suspect had been publicly named, and the state's loss had not yet been calculated. Meanwhile, the national aid-checking portal (cekbansos.kemensos.go.id) shows only a recipient's name, income decile, and status: no amount, and no proof that a disbursement happened. Citizens and independent auditors cannot verify a disbursement claim on their own.
 
 ## Solution
 
-BanSosChain is a proof-of-disbursement layer built on top of the existing system, not a replacement for it. Every aid application moves through a clear flow: submitted, assessed by an AI judge, approved by a verifier, held through a 24-hour objection window, then actually transferred on-chain to the recipient's wallet. Every step produces a transaction anyone can verify on BscScan — no permission or special access required.
+BanSosChain is a proof-of-disbursement layer built on top of the existing system, not a replacement for it. Every aid application moves through a clear flow: submitted, assessed by an AI judge, approved by a verifier, held through a 24-hour objection window, then actually transferred on-chain to the recipient's wallet. Every step produces a transaction anyone can verify on BscScan, no permission or special access required.
 
 ## What Is Real and What Is Simulated
 
@@ -59,7 +59,7 @@ Token-agnostic by design: the program token is a plain address, so USDT or IDRX 
 
 ## Design Decisions
 
-- No upgradeable proxy — the owner cannot silently change the rules after deployment.
+- No upgradeable proxy: the owner cannot silently change the rules after deployment.
 - `cairkan()` is permissionless (a keeper pattern): anyone can trigger a disbursement, but funds always go to the recipient wallet on record.
 - Ownable2Step on both contracts, custom errors decoded into readable messages in the UI.
 - Verified on BscScan (Exact Match), 19 tests, 100% branch coverage.
