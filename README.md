@@ -1,11 +1,11 @@
 # BanSosChain
 
-A public, on-chain proof layer for social-aid disbursements — verifiable by anyone.
+A public, on-chain proof layer for social-aid disbursements - verifiable by anyone.
 
 Built for Indonesia Web3 Hackathon 2026.
 
 - **Live dashboard:** https://bansoschain.vercel.app
-- **Demo video:** (paste your YouTube link here)
+- **Demo video:** https://youtu.be/N0RGXMtwoaw?si=jnsLb0csy-ewsMu5
 - **Contracts (BSC Testnet):**
   - DisbursementPool: [`0x58Cb1E7Cc9C5812afb586E77c72bc452D3a528BC`](https://testnet.bscscan.com/address/0x58Cb1E7Cc9C5812afb586E77c72bc452D3a528BC)
   - BeneficiaryRegistry: [`0xf726b1978003DB342492e29D3396C9Fe9271970C`](https://testnet.bscscan.com/address/0xf726b1978003DB342492e29D3396C9Fe9271970C)
@@ -72,9 +72,17 @@ Token-agnostic by design: the program token is a plain address, so USDT or IDRX 
 - Key custody for identity hashing (`idHash`) is not finalized. Next: a designated key holder, then zero-knowledge proofs so eligibility can be proven without revealing identity.
 - `metadataURI` points to a public Gist with no on-chain integrity hash. Fine for test data, not for real citizen data. Next: store a content hash on-chain and move to encrypted storage.
 - Verifiers cannot be revoked, there is no global pause, and suspensions carry no on-chain reason. Next: add all three.
+- Masking the name alone isn't sufficient. Granular details (sub-district, personal narrative) act as strong quasi-identifiers in a small population, and a displayed wallet address is a separate re-identification vector if later linked to a KYC'd account.
+- Next: hash-based content separation (above) addresses this directly; ZK hardens identity, not document content.
 - Next: validate the flow with a real regional social-affairs agency.
 
 ## Repo structure
+
+- `SmartContract/` — Foundry project (BeneficiaryRegistry, DisbursementPool)
+- `ponder/` — indexer (Ponder + GraphQL)
+- `ai-verify/` — AI verification service
+- `frontend/` — Next.js dashboard
+
 ## Running locally
 
 Each folder has its own dependencies. Broadly:
@@ -99,4 +107,4 @@ You'll need your own RPC URL and deployed contract addresses in each `.env` — 
 
 ## Team
 
-Solo build — [@tronic21-ctrl](https://github.com/tronic21-ctrl)
+Solo build - [@tronic21-ctrl](https://github.com/tronic21-ctrl)
