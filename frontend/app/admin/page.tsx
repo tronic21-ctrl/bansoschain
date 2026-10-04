@@ -78,7 +78,7 @@ function RegisterForm({ lang }: { lang: Language }) {
   const [metadataURI, setMetadataURI] = useState("");
   const { writeContract, data: hash, isPending, error: writeError, reset } = useWriteContract();
   const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
-  const errorMsg = (writeError || confirmError) && parseContractError(writeError || confirmError);
+  const errorMsg = (writeError || confirmError) && parseContractError(writeError || confirmError, lang);
 
   return (
     <div>
@@ -128,7 +128,7 @@ function StatusForm({ lang }: { lang: Language }) {
   const [status, setStatus] = useState<"1" | "2" | "3">("1");
   const { writeContract, data: hash, isPending, error: writeError, reset } = useWriteContract();
   const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
-  const errorMsg = (writeError || confirmError) && parseContractError(writeError || confirmError);
+  const errorMsg = (writeError || confirmError) && parseContractError(writeError || confirmError, lang);
 
   const { data: pending } = useQuery({
     queryKey: ["pending-beneficiaries"],

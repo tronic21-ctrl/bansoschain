@@ -192,7 +192,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
   const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
 
   const rawError = writeError || confirmError;
-  const errorMessage = rawError ? parseContractError(rawError) : null;
+  const errorMessage = rawError ? parseContractError(rawError, lang) : null;
 
   if (!row.programId) return null;
 
@@ -511,7 +511,7 @@ function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lan
     <div className="min-w-0 border border-border bg-surface p-4 space-y-2">
       <div className="flex flex-col gap-1 font-sans text-sm sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 break-words text-foreground/60">
-          Program <span className="font-mono">{shortenHex(programId)}</span>{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
+          Program <span>{shortenHex(programId)}</span>{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
         </span>
         <span className="break-words tabular-nums sm:text-right">
           {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
@@ -550,7 +550,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
   const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
 
   const rawError = writeError || confirmError;
-  const errorMessage = rawError ? parseContractError(rawError) : null;
+  const errorMessage = rawError ? parseContractError(rawError, lang) : null;
 
   const canCairkan = row.status === "siap_cair" && row.programId;
 
@@ -562,7 +562,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
     query: { enabled: Boolean(canCairkan) && isConnected && !isWrongNetwork },
   });
   const preflightError =
-    simulateError && !isPending && !isConfirming && !isSuccess ? parseContractError(simulateError) : null;
+    simulateError && !isPending && !isConfirming && !isSuccess ? parseContractError(simulateError, lang) : null;
 
   return (
       <div className="border border-border bg-surface p-6 space-y-4">
@@ -573,7 +573,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
         </button>
       </div>
 
-      <div className="space-y-1 font-mono text-sm text-foreground/70 break-all">
+      <div className="space-y-1 text-sm text-foreground/70 break-all">
         <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}</div>
         {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}</div>}
       </div>
@@ -913,7 +913,7 @@ export default function Home() {
                         : `View application details ${shortenHex(row.idHash)}`}
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
-                      <td className="break-words p-3 font-mono">{shortenHex(row.idHash)}</td>
+                      <td className="break-words p-3">{shortenHex(row.idHash)}</td>
                       <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
                         {statusLabel(row.status, lang)}
                         {row.disputes.length > 0 && (
