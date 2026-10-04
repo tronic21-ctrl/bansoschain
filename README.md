@@ -78,10 +78,10 @@ Token-agnostic by design: the program token is a plain address, so USDT or IDRX 
 
 ## Repo structure
 
-- `SmartContract/` — Foundry project (BeneficiaryRegistry, DisbursementPool)
-- `ponder/` — indexer (Ponder + GraphQL)
-- `ai-verify/` — AI verification service
-- `frontend/` — Next.js dashboard
+- `SmartContract/` - Foundry project (BeneficiaryRegistry, DisbursementPool)
+- `ponder/` - indexer (Ponder + GraphQL)
+- `ai-verify/` - AI verification service
+- `frontend/` - Next.js dashboard
 
 ## Running locally
 

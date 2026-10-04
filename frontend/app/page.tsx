@@ -307,7 +307,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
             <p className="mb-1 font-mono text-[11px] uppercase tracking-wider text-accent-verified">
               {lang === "id" ? "Prototype Hackathon" : "Hackathon Prototype"}
             </p>
-            <h2 id="prototype-info-title" className="font-serif text-2xl">
+            <h2 id="prototype-info-title" className="font-sans text-2xl">
               {lang === "id" ? "Tentang BanSOSChain" : "About BanSOSChain"}
             </h2>
           </div>
@@ -323,7 +323,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
         <div className="space-y-6 text-sm leading-relaxed">
           <section className="space-y-3">
             <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Tentang prototype" : "About the prototype"}</h3>
-            <p className="text-base font-serif">
+            <p className="text-base font-sans">
               {lang === "id"
                 ? "BanSOSChain adalah gambaran masa depan penyaluran bantuan sosial. Setiap proses dari pengajuan hingga pencairan dana dicatat permanen di sistem dan bisa diawasi oleh siapa saja, membuat penyimpangan lebih sulit disembunyikan."
                 : "BanSOSChain is a vision of the future of social assistance. Every step, from application to disbursement, is permanently recorded and can be monitored by anyone, making misuse harder to hide."}
@@ -360,7 +360,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                     {number}
                   </div>
                   <div>
-                    <div className="font-serif font-medium text-base mb-1">{title}</div>
+                    <div className="font-sans font-medium text-base mb-1">{title}</div>
                     <p className="text-sm text-foreground/70">{description}</p>
                   </div>
                 </div>
@@ -386,7 +386,7 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
                   : ["Open Audit Trail", "Anyone, including the public and government, can monitor the assistance status in real-time."],
               ].map(([title, desc]) => (
                 <div key={title} className="border-t border-border pt-3">
-                  <dt className="font-serif font-medium text-base mb-1">{title}</dt>
+                  <dt className="font-sans font-medium text-base mb-1">{title}</dt>
                   <dd className="text-sm text-foreground/70">{desc}</dd>
                 </div>
               ))}
@@ -567,7 +567,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
   return (
       <div className="border border-border bg-surface p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-xl">{lang === "id" ? "Detail Pengajuan" : "Application Details"}</h2>
+        <h2 className="font-sans text-xl">{lang === "id" ? "Detail Pengajuan" : "Application Details"}</h2>
         <button onClick={onClose} className="text-sm text-foreground/50 hover:text-foreground">
           {lang === "id" ? "Tutup" : "Close"}
         </button>

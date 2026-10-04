@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #e6e6e1;
+  --background: #f6f6f3;
   --surface: #ffffff;
   --foreground: #1b1d1a;
   --border: #d6d6d0;
@@ -20,8 +20,9 @@
   --color-accent-verified-dark: var(--accent-verified-dark);
   --color-accent-rejected: var(--accent-rejected);
   --color-accent-warning: var(--accent-warning);
-  --font-sans: var(--font-source-serif), ui-serif, Georgia, Cambria, serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-sans);
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
 }
 
 body {

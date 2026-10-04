@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import ContextProvider from "@/context";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
-
-// Matikan next/font/google sementara agar dev server tidak stuck mengunduh font
-const sourceSerif = { variable: "--font-source-serif" };
-const plexMono = { variable: "--font-plex-mono" };
 
 export const metadata: Metadata = {
   title: "BanSOSChain (BSOS-Chain) | Audit Trail Pencairan Bansos",
@@ -21,10 +22,7 @@ export default async function RootLayout({
   const cookies = headersList.get("cookie");
 
   return (
-    <html
-      lang="id"
-      className={`${sourceSerif.variable} ${plexMono.variable} h-full antialiased`}
-    >
+    <html lang="id" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">
         <ContextProvider cookies={cookies}>{children}</ContextProvider>
       </body>

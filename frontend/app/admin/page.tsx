@@ -82,7 +82,7 @@ function RegisterForm({ lang }: { lang: Language }) {
 
   return (
     <div>
-      <h2 className="font-serif text-xl mb-3">{copy[lang].register}</h2>
+      <h2 className="font-sans text-xl mb-3">{copy[lang].register}</h2>
       <div className="space-y-3">
         <div>
           <label className={labelCls}>{copy[lang].idHash}</label>
@@ -138,7 +138,7 @@ function StatusForm({ lang }: { lang: Language }) {
 
   return (
     <div className="border-t border-border pt-6 mt-6">
-      <h2 className="font-serif text-xl mb-1">{copy[lang].update}</h2>
+      <h2 className="font-sans text-xl mb-1">{copy[lang].update}</h2>
       {pending && pending.length > 0 && (
         <div className="mb-4 animate-fade-slide-up">
           <p className="text-xs text-foreground/60 mb-1">{copy[lang].pending}</p>
@@ -214,7 +214,7 @@ export default function AdminPage() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between gap-4 mb-6">
-        <h1 className="font-serif text-2xl">{copy[lang].title}</h1>
+        <h1 className="font-sans text-2xl">{copy[lang].title}</h1>
         <div className="flex items-center gap-3">
           <LanguageSwitch lang={lang} setLang={setLang} />
           <a href="/" className="text-xs font-mono text-foreground/60 hover:text-foreground shrink-0">{copy[lang].back}</a>
