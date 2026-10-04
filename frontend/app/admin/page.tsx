@@ -9,7 +9,7 @@ import { parseContractError, useWrongNetwork } from "@/lib/web3-helpers";
 import { shortenHex } from "@/lib/format";
 
 const REGISTRY = process.env.NEXT_PUBLIC_BENEFICIARY_REGISTRY_ADDRESS as `0x${string}`;
-const btnBase = "border px-4 py-2 font-mono text-sm transition-colors disabled:opacity-40";
+const btnBase = "border px-4 py-2 font-sans text-sm transition-colors disabled:opacity-40";
 const inputCls = "w-full border border-border p-2 font-mono text-sm bg-transparent";
 const labelCls = "block text-xs text-foreground/60 mb-1";
 
@@ -117,7 +117,7 @@ function RegisterForm({ lang }: { lang: Language }) {
         >
           {isPending ? (lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…") : isConfirming ? (lang === "id" ? "Mengirim…" : "Sending…") : isSuccess ? (lang === "id" ? "Terdaftar ✓" : "Registered ✓") : copy[lang].submit}
         </button>
-        {errorMsg && <p className="text-xs font-mono text-accent-rejected">{errorMsg}</p>}
+        {errorMsg && <p className="text-xs font-sans text-accent-rejected">{errorMsg}</p>}
       </div>
     </div>
   );
@@ -170,7 +170,7 @@ function StatusForm({ lang }: { lang: Language }) {
         >
           {isPending ? (lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…") : isConfirming ? (lang === "id" ? "Mengirim…" : "Sending…") : isSuccess ? (lang === "id" ? "Diperbarui ✓" : "Updated ✓") : copy[lang].updateButton}
         </button>
-        {errorMsg && <p className="text-xs font-mono text-accent-rejected">{errorMsg}</p>}
+        {errorMsg && <p className="text-xs font-sans text-accent-rejected">{errorMsg}</p>}
       </div>
     </div>
   );
@@ -188,11 +188,11 @@ export default function AdminPage() {
     query: { enabled: isConnected && Boolean(address) },
   });
 
-  if (!isConnected) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-mono text-sm text-foreground/60">{copy[lang].connect}</p></main>;
+  if (!isConnected) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-sans text-sm text-foreground/60">{copy[lang].connect}</p></main>;
   if (isWrongNetwork) return (
     <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
       <LanguageSwitch lang={lang} setLang={setLang} />
-      <p className="font-mono text-sm text-accent-warning">{copy[lang].wrongNetwork}</p>
+      <p className="font-sans text-sm text-accent-warning">{copy[lang].wrongNetwork}</p>
       <button onClick={trySwitch} disabled={isSwitching} className={`${btnBase} border-accent-warning text-accent-warning`}>{isSwitching ? (lang === "id" ? "Memindahkan…" : "Switching…") : copy[lang].switch}</button>
     </main>
   );
@@ -205,11 +205,11 @@ export default function AdminPage() {
           role="status"
           aria-label={lang === "id" ? "Memuat" : "Loading"}
         />
-        <p className="font-mono text-sm text-foreground/50">{copy[lang].checking}</p>
+        <p className="font-sans text-sm text-foreground/50">{copy[lang].checking}</p>
       </div>
     </main>
   );
-  if (!isVerifierWallet) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-mono text-sm text-accent-rejected">{copy[lang].notVerifier}</p></main>;
+  if (!isVerifierWallet) return <main className="max-w-2xl mx-auto px-4 py-8"><LanguageSwitch lang={lang} setLang={setLang} /><p className="mt-4 font-sans text-sm text-accent-rejected">{copy[lang].notVerifier}</p></main>;
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
@@ -217,14 +217,14 @@ export default function AdminPage() {
         <h1 className="font-sans text-2xl">{copy[lang].title}</h1>
         <div className="flex items-center gap-3">
           <LanguageSwitch lang={lang} setLang={setLang} />
-          <a href="/" className="text-xs font-mono text-foreground/60 hover:text-foreground shrink-0">{copy[lang].back}</a>
+          <a href="/" className="text-xs font-sans text-foreground/60 hover:text-foreground shrink-0">{copy[lang].back}</a>
         </div>
       </div>
       <div className="border border-border bg-surface p-6 animate-fade-slide-up">
         <RegisterForm lang={lang} />
         <StatusForm lang={lang} />
         <p className="text-xs text-foreground/50 mt-8 pt-4 border-t border-border">
-          {copy[lang].activeProgram}: 0xb34b13…50ab (hardcode DEFAULT_PROGRAM_ID)
+          {copy[lang].activeProgram}: 0xb34b13…50ab
         </p>
       </div>
 

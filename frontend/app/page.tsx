@@ -40,8 +40,8 @@ const copy = {
     menu: "Menu",
     close: "Tutup",
     live: "Live",
-    fallback: "Demo Mode - data cadangan",
-    fallbackBanner: "Indexer langsung sedang tidak bisa diakses. Tabel di bawah menampilkan data cadangan, bukan data real-time.",
+    fallback: "Mode Demo - data cadangan",
+    fallbackBanner: "Data langsung belum bisa dimuat. Tabel di bawah menampilkan data cadangan, bukan data real-time.",
   },
   en: {
     admin: "Admin Panel →",
@@ -59,8 +59,8 @@ const copy = {
     menu: "Menu",
     close: "Close",
     live: "Live",
-    fallback: "Demo Mode - fallback data",
-    fallbackBanner: "The live indexer is currently unreachable. The table below shows fallback data, not real-time data.",
+    fallback: "Demo Mode - backup data",
+    fallbackBanner: "Live data cannot be loaded right now. The table below shows backup data, not real-time data.",
   },
 } as const;
 
@@ -509,11 +509,11 @@ function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lan
 
   return (
     <div className="min-w-0 border border-border bg-surface p-4 space-y-2">
-      <div className="flex flex-col gap-1 font-mono text-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-1 font-sans text-sm sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 break-words text-foreground/60">
-          Program {shortenHex(programId)}{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
+          Program <span className="font-mono">{shortenHex(programId)}</span>{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
         </span>
-        <span className="break-words sm:text-right">
+        <span className="break-words tabular-nums sm:text-right">
           {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
         </span>
       </div>
@@ -849,7 +849,7 @@ export default function Home() {
           </p>
         </div>
       )}
-      {error && <p className="font-sans text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
+      {error && <p className="font-sans text-sm text-accent-rejected">{lang === "id" ? "Gagal memuat data." : "Failed to load data."}</p>}
 
       {data && (
         <>
@@ -913,7 +913,7 @@ export default function Home() {
                         : `View application details ${shortenHex(row.idHash)}`}
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
-                      <td className="break-words p-3">{shortenHex(row.idHash)}</td>
+                      <td className="break-words p-3 font-mono">{shortenHex(row.idHash)}</td>
                       <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
                         {statusLabel(row.status, lang)}
                         {row.disputes.length > 0 && (
@@ -922,7 +922,7 @@ export default function Home() {
                           </span>
                         )}
                       </td>
-                      <td className="break-words p-3">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
+                      <td className="break-words p-3 tabular-nums">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                     </tr>
                   ))
                 )}
