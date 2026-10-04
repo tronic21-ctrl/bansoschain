@@ -115,7 +115,7 @@ function AdminLink({ lang }: { lang: Language }) {
   return (
     <a
       href="/admin"
-      className="border border-border px-3 py-1.5 font-mono text-xs hover:bg-foreground hover:text-background transition-colors"
+      className="border border-border px-3 py-1.5 font-sans text-xs hover:bg-foreground hover:text-background transition-colors"
     >
       {copy[lang].admin}
     </a>
@@ -133,7 +133,7 @@ function ConnectButton({ lang }: { lang: Language }) {
         <button
           onClick={() => (switchChainAvailable ? trySwitch() : open({ view: "Networks" }))}
           disabled={isSwitching}
-          className="bg-accent-warning text-white px-3 py-1.5 font-mono text-xs hover:bg-accent-warning/90 transition-colors"
+          className="bg-accent-warning text-white px-3 py-1.5 font-sans text-xs hover:bg-accent-warning/90 transition-colors"
         >
           {isSwitching
             ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -141,7 +141,7 @@ function ConnectButton({ lang }: { lang: Language }) {
         </button>
         <button
           onClick={() => open()}
-          className="rounded-none border border-background/40 px-3 py-1.5 font-mono text-xs text-background hover:bg-background hover:text-foreground transition-colors"
+          className="rounded-none border border-background/40 px-3 py-1.5 font-sans text-xs text-background hover:bg-background hover:text-foreground transition-colors"
         >
           {address ? shortenHex(address) : "Wallet"}
         </button>
@@ -152,7 +152,7 @@ function ConnectButton({ lang }: { lang: Language }) {
   return (
     <button
       onClick={() => open()}
-      className="rounded-none border border-background/40 px-4 py-2 font-mono text-sm text-background hover:bg-background hover:text-foreground transition-colors"
+      className="rounded-none border border-background/40 px-4 py-2 font-sans text-sm text-background hover:bg-background hover:text-foreground transition-colors"
     >
       {isConnected && address ? shortenHex(address) : copy[lang].connect}
     </button>
@@ -176,7 +176,7 @@ function SummaryStrip({ rows, lang }: { rows: AuditRow[]; lang: Language }) {
     <div className="grid min-w-0 grid-cols-3 border border-border bg-surface">
       {stats.map((s, i) => (
         <div key={s.label} className={`min-w-0 p-3 sm:p-4 ${i > 0 ? "border-l border-border" : ""}`}>
-          <div className="font-mono text-2xl sm:text-3xl">{s.value}</div>
+          <div className="font-sans text-2xl sm:text-3xl">{s.value}</div>
           <div className="text-xs text-foreground/60 sm:text-sm">{s.label}</div>
         </div>
       ))}
@@ -207,7 +207,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
         }}
         placeholder={lang === "id" ? "Jelaskan kecurigaan Anda soal pengajuan ini…" : "Explain your concern about this application…"}
         rows={2}
-        className="w-full border border-border p-2 font-mono text-sm bg-transparent"
+        className="w-full border border-border p-2 font-sans text-sm bg-transparent"
       />
 
       {!isConnected ? (
@@ -219,7 +219,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
           type="button"
           onClick={trySwitch}
           disabled={isSwitching}
-          className="bg-accent-warning text-white px-4 py-2 font-mono text-sm hover:bg-accent-warning/90 transition-colors"
+          className="bg-accent-warning text-white px-4 py-2 font-sans text-sm hover:bg-accent-warning/90 transition-colors"
         >
           {isSwitching
             ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -236,7 +236,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
               args: [row.programId!, row.idHash, reason],
             })
           }
-          className="border border-accent-rejected text-accent-rejected px-4 py-2 font-mono text-sm hover:bg-accent-rejected hover:text-background transition-colors disabled:opacity-40"
+          className="border border-accent-rejected text-accent-rejected px-4 py-2 font-sans text-sm hover:bg-accent-rejected hover:text-background transition-colors disabled:opacity-40"
         >
           {isPending
             ? lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…"
@@ -247,7 +247,7 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
       )}
 
       {errorMessage && (
-        <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
+        <div className="bg-accent-rejected p-3 text-xs font-sans text-white space-y-1">
           <div className="flex items-center justify-between font-semibold">
             <span>{lang === "id" ? "Gagal Mengajukan Sanggahan" : "Objection Failed"}</span>
             <button type="button" onClick={() => resetWrite()} className="text-white/70 hover:text-white underline text-[11px]">
@@ -264,14 +264,14 @@ function DisputeForm({ row, lang }: { row: AuditRow; lang: Language }) {
 function IndexerBadge({ source, lang }: { source: "live" | "fallback"; lang: Language }) {
   if (source === "live") {
     return (
-      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent-verified-dark">
+      <span className="inline-flex items-center gap-1.5 font-sans text-xs text-accent-verified-dark">
         <span className="h-1.5 w-1.5 rounded-full bg-accent-verified-dark" />
         {copy[lang].live}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-background/70" title={copy[lang].fallbackBanner}>
+    <span className="inline-flex items-center gap-1.5 font-sans text-xs text-background/70" title={copy[lang].fallbackBanner}>
       <span className="h-1.5 w-1.5 rounded-full bg-background/50" />
       {copy[lang].fallback}
     </span>
@@ -465,7 +465,7 @@ function MenuButton({
           <button
             type="button"
             onClick={onAbout}
-            className="mt-2 block w-full border border-border px-3 py-2 text-left font-mono text-xs hover:bg-foreground hover:text-background"
+            className="mt-2 block w-full border border-border px-3 py-2 text-left font-sans text-xs hover:bg-foreground hover:text-background"
             role="menuitem"
           >
             {copy[lang].about}
@@ -600,7 +600,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
         </div>
       )}
 
-      <ol className="space-y-2 font-mono text-sm">
+      <ol className="space-y-2 font-sans text-sm">
         <li>
           → {lang === "id" ? "Diajukan" : "Submitted"}
           {source === "live" && onchain?.[5] ? `: ${formatTimestamp(Number(onchain[5]))}` : ""}{" "}
@@ -651,7 +651,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
               type="button"
               onClick={trySwitch}
               disabled={isSwitching}
-              className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-mono text-sm hover:bg-accent-warning/20 transition-colors"
+              className="border border-accent-warning bg-accent-warning/10 text-accent-warning px-4 py-2 font-sans text-sm hover:bg-accent-warning/20 transition-colors"
             >
               {isSwitching
                 ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -668,7 +668,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
                   args: [row.programId!, row.idHash],
                 })
               }
-              className="border border-accent-verified text-accent-verified px-4 py-2 font-mono text-sm hover:bg-accent-verified hover:text-background transition-colors disabled:opacity-40"
+              className="border border-accent-verified text-accent-verified px-4 py-2 font-sans text-sm hover:bg-accent-verified hover:text-background transition-colors disabled:opacity-40"
             >
               {isPending
                 ? lang === "id" ? "Konfirmasi di wallet…" : "Confirm in wallet…"
@@ -679,14 +679,14 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
           )}
 
           {preflightError && (
-            <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
+            <div className="bg-accent-rejected p-3 text-xs font-sans text-white space-y-1">
               <div className="font-semibold">{lang === "id" ? "Tidak Bisa Dicairkan" : "Cannot Disburse"}</div>
               <p className="break-words leading-relaxed">{preflightError}</p>
             </div>
           )}
 
           {errorMessage && (
-            <div className="bg-accent-rejected p-3 text-xs font-mono text-white space-y-1">
+            <div className="bg-accent-rejected p-3 text-xs font-sans text-white space-y-1">
               <div className="flex items-center justify-between font-semibold">
                 <span>{lang === "id" ? "Gagal Mencairkan Dana" : "Disbursement Failed"}</span>
                 <button type="button" onClick={() => resetWrite()} className="text-white/70 hover:text-white underline text-[11px]">
@@ -813,7 +813,7 @@ export default function Home() {
 
       <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
         {isWrongNetwork && (
-        <div className="bg-accent-warning p-3.5 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
+        <div className="bg-accent-warning p-3.5 font-sans text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <span>
             {lang === "id"
               ? <>Dompet terhubung ke jaringan yang salah (Chain ID: {chainId}). BanSOSChain beroperasi di <strong>BNB Chain Testnet (Chain ID 97)</strong>.</>
@@ -822,7 +822,7 @@ export default function Home() {
           <button
             onClick={trySwitch}
             disabled={isSwitching}
-            className="px-3 py-1.5 bg-white text-accent-warning font-mono text-xs whitespace-nowrap transition-colors disabled:opacity-50 hover:bg-background"
+            className="px-3 py-1.5 bg-white text-accent-warning font-sans text-xs whitespace-nowrap transition-colors disabled:opacity-50 hover:bg-background"
           >
             {isSwitching
               ? lang === "id" ? "Memindahkan…" : "Switching…"
@@ -832,7 +832,7 @@ export default function Home() {
       )}
 
       {data && data.source === "fallback" && (
-        <div className="border border-border bg-background p-3.5 font-mono text-xs text-foreground/70">
+        <div className="border border-border bg-background p-3.5 font-sans text-xs text-foreground/70">
           {copy[lang].fallbackBanner}
         </div>
       )}
@@ -844,12 +844,12 @@ export default function Home() {
             role="status"
             aria-label={lang === "id" ? "Memuat" : "Loading"}
           />
-          <p className="font-mono text-sm text-foreground/50">
+          <p className="font-sans text-sm text-foreground/50">
             {lang === "id" ? "Memuat data…" : "Loading data…"}
           </p>
         </div>
       )}
-      {error && <p className="font-mono text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
+      {error && <p className="font-sans text-sm text-accent-rejected">{lang === "id" ? "Gagal ambil data dari indexer." : "Failed to load data from the indexer."}</p>}
 
       {data && (
         <>
@@ -871,12 +871,12 @@ export default function Home() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={lang === "id" ? "Cari ID hash atau status…" : "Search ID hash or status…"}
-              className="w-full border border-border bg-surface py-3 pl-10 pr-4 font-mono text-sm placeholder:text-foreground/40 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-colors"
+              className="w-full border border-border bg-surface py-3 pl-10 pr-4 font-sans text-sm placeholder:text-foreground/40 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground transition-colors"
             />
           </div>
 
           <div className="w-full min-w-0">
-            <table className="w-full table-fixed border border-border bg-surface font-mono text-sm">
+            <table className="w-full table-fixed border border-border bg-surface font-sans text-sm">
               <thead>
                 <tr className="bg-foreground text-left text-background">
                   <th className="w-[37%] p-3 font-normal">{copy[lang].recipient}</th>
@@ -917,7 +917,7 @@ export default function Home() {
                       <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
                         {statusLabel(row.status, lang)}
                         {row.disputes.length > 0 && (
-                          <span className="ml-2 inline-block border border-accent-rejected px-1.5 py-0.5 align-middle text-[10px] font-mono text-accent-rejected">
+                          <span className="ml-2 inline-block border border-accent-rejected px-1.5 py-0.5 align-middle text-[10px] font-sans text-accent-rejected">
                             {row.disputes.length} {lang === "id" ? "sanggahan" : row.disputes.length > 1 ? "objections" : "objection"}
                           </span>
                         )}
