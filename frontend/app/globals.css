@@ -2,9 +2,10 @@
 
 :root {
   --background: #f6f6f3;
+  --page: #ecece7;
   --surface: #ffffff;
   --foreground: #1b1d1a;
-  --border: #d6d6d0;
+  --border: #c9c9c1;
   --accent-verified: #1f6e5c;
   --accent-verified-dark: #2fa78c;
   --accent-rejected: #a8402f;
@@ -26,7 +27,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--page);
   color: var(--foreground);
   overflow-x: hidden;
 }

@@ -812,6 +812,16 @@ export default function Home() {
       </header>
 
       <main className="mx-auto min-w-0 max-w-4xl space-y-6 overflow-x-hidden px-4 py-8">
+        <div className={`space-y-1 ${data ? "" : "hidden"}`}>
+          <h1 className="text-2xl">
+            {lang === "id" ? "Audit Pencairan Bansos" : "Social Aid Disbursement Audit"}
+          </h1>
+          <p className="max-w-2xl text-sm text-foreground/70">
+            {lang === "id"
+              ? "Setiap pencairan bantuan sosial tercatat di blockchain dan bisa diperiksa siapa pun. Nama penerima disamarkan. Klik satu baris untuk melihat detailnya."
+              : "Every social aid disbursement is recorded on the blockchain and can be checked by anyone. Recipient names are masked. Click a row to see its details."}
+          </p>
+        </div>
         {isWrongNetwork && (
         <div className="bg-accent-warning p-3.5 font-sans text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
           <span>
@@ -915,7 +925,7 @@ export default function Home() {
                     >
                       <td className="break-words p-3">{shortenHex(row.idHash)}</td>
                       <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
-                        {statusLabel(row.status, lang)}
+                        <span className="inline-flex items-center gap-2"><span aria-hidden="true" className={`inline-block h-2.5 w-2.5 ${["menunggu_verifikasi", "disetujui_masa_sanggah", "siap_cair"].includes(row.status) ? "border-[1.5px] border-current" : "bg-current"}`} />{statusLabel(row.status, lang)}</span>
                         {row.disputes.length > 0 && (
                           <span className="ml-2 inline-block border border-accent-rejected px-1.5 py-0.5 align-middle text-[10px] font-sans text-accent-rejected">
                             {row.disputes.length} {lang === "id" ? "sanggahan" : row.disputes.length > 1 ? "objections" : "objection"}
