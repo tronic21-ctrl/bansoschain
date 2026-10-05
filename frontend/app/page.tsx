@@ -590,6 +590,36 @@ function ExplorerLink({ href, label, lang }: { href: string; label?: string; lan
   );
 }
 
+function TimelineItem({
+  label,
+  date,
+  txHash,
+  linkLabel,
+  tone,
+  lang,
+  children,
+}: {
+  label: string;
+  date?: string;
+  txHash?: string | null;
+  linkLabel?: string;
+  tone?: "reject";
+  lang: Language;
+  children?: React.ReactNode;
+}) {
+  const reject = tone === "reject";
+  return (
+    <li className={reject ? "border-l-2 border-accent-rejected pl-3" : ""}>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+        <span className={`font-medium ${reject ? "text-accent-rejected" : "text-foreground"}`}>{label}</span>
+        {date && <span className="text-foreground/60">{date}</span>}
+        {txHash && <ExplorerLink href={`https://testnet.bscscan.com/tx/${txHash}`} label={linkLabel} lang={lang} />}
+      </div>
+      {children && <div className="mt-1 space-y-0.5 break-words text-foreground/80">{children}</div>}
+    </li>
+  );
+}
+
 function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: () => void; lang: Language; source: "live" | "fallback" }) {
   const { data: onchain } = useReadContract({
     address: REGISTRY,
@@ -639,13 +669,13 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
         </button>
       </div>
 
-      <div className="space-y-1 text-sm text-foreground/70 break-all">
+      <div className="space-y-1 text-xs text-foreground/70 break-all sm:text-sm">
         <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}<CopyButton value={row.idHash} what="ID Hash" lang={lang} /></div>
         {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}<CopyButton value={String(onchain[1])} what="Wallet" lang={lang} /><ExplorerLink href={`https://testnet.bscscan.com/address/${onchain[1]}`} lang={lang} /></div>}
       </div>
 
       {proof && (
-        <div className="min-w-0 border border-border bg-background p-4 space-y-1.5">
+        <div className="min-w-0 border border-border bg-background p-4 space-y-3 sm:space-y-1.5">
           <div className="text-[11px] font-mono text-foreground/40 uppercase tracking-wider mb-2">
             {lang === "id" ? "Data Pengajuan" : "Application Data"}
           </div>
@@ -656,7 +686,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
               const value = line.slice(colonIdx + 1).trim();
               return (
                 <div key={i} className="flex flex-col items-start gap-0 text-sm leading-relaxed sm:flex-row sm:gap-2">
-                  <span className="text-foreground/80 sm:w-[140px] sm:shrink-0">{proofLabel(key, lang)}:</span>
+                  <span className="text-xs text-foreground/60 sm:w-[140px] sm:shrink-0 sm:text-sm sm:text-foreground/80">{proofLabel(key, lang)}:</span>
                   <span className="min-w-0 break-words text-foreground">{key === "Nama" ? maskName(value) : value}</span>
                 </div>
               );
@@ -666,35 +696,42 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
         </div>
       )}
 
-      <ol className="space-y-2 font-sans text-sm">
-        <li>
-          → {lang === "id" ? "Diajukan" : "Submitted"}
-          {source === "live" && onchain?.[5] ? `: ${formatTimestamp(Number(onchain[5]))}` : ""}{" "}
-          {row.registeredTxHash && (
-            <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} lang={lang} />
-          )}
-        </li>
+      <ol className="space-y-3 text-sm">
+        <TimelineItem
+          label={lang === "id" ? "Diajukan" : "Submitted"}
+          date={source === "live" && onchain?.[5] ? formatTimestamp(Number(onchain[5])) : undefined}
+          txHash={row.registeredTxHash}
+          lang={lang}
+        />
         {row.approvedAt && (
-          <li>
-            → {lang === "id" ? "Disetujui" : "Approved"}: {formatTimestamp(row.approvedAt)}{" "}
-            {row.approvedTxHash && (
-              <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} lang={lang} />
-            )}
-          </li>
+          <TimelineItem
+            label={lang === "id" ? "Disetujui" : "Approved"}
+            date={formatTimestamp(row.approvedAt)}
+            txHash={row.approvedTxHash}
+            lang={lang}
+          />
         )}
         {row.disbursedAt && (
-          <li>
-            → {lang === "id" ? "Dana Cair" : "Disbursed"}: {formatTimestamp(row.disbursedAt)}{" "}
-            {row.disbursedTxHash && (
-              <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} lang={lang} />
-            )}
-          </li>
+          <TimelineItem
+            label={lang === "id" ? "Dana Cair" : "Disbursed"}
+            date={formatTimestamp(row.disbursedAt)}
+            txHash={row.disbursedTxHash}
+            lang={lang}
+          />
         )}
         {row.disputes.map((d, i) => (
-          <li key={i} className="text-accent-rejected">
-            → {lang === "id" ? "Disanggah oleh" : "Objected by"} {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}{" "}
-            <ExplorerLink href={`https://testnet.bscscan.com/tx/${d.txHash}`} label={lang === "id" ? "Verifikasi di BscScan" : "Verify on BscScan"} lang={lang} />
-          </li>
+          <TimelineItem
+            key={i}
+            tone="reject"
+            label={`${lang === "id" ? "Sanggahan" : "Objection"} ${i + 1}`}
+            date={formatTimestamp(d.timestamp)}
+            txHash={d.txHash}
+            linkLabel={lang === "id" ? "Verifikasi di BscScan" : "Verify on BscScan"}
+            lang={lang}
+          >
+            <p>{d.alasanURI}</p>
+            <p className="text-xs text-foreground/60">{lang === "id" ? "Oleh" : "By"} {shortenHex(d.pelapor)}</p>
+          </TimelineItem>
         ))}
       </ol>
 

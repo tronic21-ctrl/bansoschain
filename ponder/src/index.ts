@@ -42,13 +42,19 @@ ponder.on("DisbursementPool:PencairanDisetujui", async ({ event, context }) => {
       txHash: event.transaction.hash,
     });
   } catch (err: any) {
-    // approval berulang buat pasangan programId+idHash yang sama —
-    // sisa dari bug lama ai-verify (udah difix), bukan error baru.
-    // Event kedua dst di-skip, bukan bikin indexer crash.
-    const msg = String(err.message || "").toLowerCase();
-    if (!msg.includes("unique constraint") && !msg.includes("duplicate key") && err.code !== "23505") {
-      throw err;
+    const msg = String(err?.message || "").toLowerCase();
+    const name = String(err?.constructor?.name || "").toLowerCase();
+    if (
+      msg.includes("unique constraint") ||
+      msg.includes("duplicate key") ||
+      msg.includes("primary key conflict") ||
+      name.includes("uniqueconstraint") ||
+      err?.code === "23505"
+    ) {
+      // Duplicate approval for same programId+idHash — skip safely
+      return;
     }
+    throw err;
   }
 });
 
@@ -62,8 +68,16 @@ ponder.on("DisbursementPool:DanaDicairkan", async ({ event, context }) => {
       timestamp: event.args.timestamp,
       txHash: event.transaction.hash,
     });
-  } catch (err) {
-    if (String(err).includes("duplicate key")) {
+  } catch (err: any) {
+    const msg = String(err?.message || "").toLowerCase();
+    const name = String(err?.constructor?.name || "").toLowerCase();
+    if (
+      msg.includes("unique constraint") ||
+      msg.includes("duplicate key") ||
+      msg.includes("primary key conflict") ||
+      name.includes("uniqueconstraint") ||
+      err?.code === "23505"
+    ) {
       return;
     }
     throw err;
