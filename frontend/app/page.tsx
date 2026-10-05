@@ -886,12 +886,12 @@ export default function Home() {
           </div>
 
           <div className="w-full min-w-0">
-            <table className="w-full table-fixed border border-border bg-surface font-sans text-sm">
+            <table className="w-full table-fixed border border-border bg-surface font-sans text-xs sm:text-sm">
               <thead>
                 <tr className="bg-foreground text-left text-background">
-                  <th className="w-[37%] p-3 font-normal">{copy[lang].recipient}</th>
-                  <th className="w-[37%] p-3 font-normal">{copy[lang].status}</th>
-                  <th className="w-[26%] p-3 font-normal">{copy[lang].amount}</th>
+                  <th className="w-[37%] p-2 sm:p-3 font-normal">{copy[lang].recipient}</th>
+                  <th className="w-[37%] p-2 sm:p-3 font-normal">{copy[lang].status}</th>
+                  <th className="w-[26%] p-2 sm:p-3 font-normal">{copy[lang].amount}</th>
                 </tr>
               </thead>
               <tbody>
@@ -923,8 +923,8 @@ export default function Home() {
                         : `View application details ${shortenHex(row.idHash)}`}
                       className="border-b border-border last:border-b-0 cursor-pointer hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-verified"
                     >
-                      <td className="break-words p-3">{shortenHex(row.idHash)}</td>
-                      <td className={`break-words p-3 ${STATUS_COLOR[row.status]}`}>
+                      <td className="break-words p-2 sm:p-3">{shortenHex(row.idHash)}</td>
+                      <td className={`break-words p-2 sm:p-3 ${STATUS_COLOR[row.status]}`}>
                         <span className="inline-flex items-center gap-2"><span aria-hidden="true" className={`inline-block h-2.5 w-2.5 ${["menunggu_verifikasi", "disetujui_masa_sanggah", "siap_cair"].includes(row.status) ? "border-[1.5px] border-current" : "bg-current"}`} />{statusLabel(row.status, lang)}</span>
                         {row.disputes.length > 0 && (
                           <span className="ml-2 inline-block border border-accent-rejected px-1.5 py-0.5 align-middle text-[10px] font-sans text-accent-rejected">
@@ -932,7 +932,7 @@ export default function Home() {
                           </span>
                         )}
                       </td>
-                      <td className="break-words p-3 tabular-nums">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
+                      <td className="break-words p-2 sm:p-3 tabular-nums">{row.amountPerBeneficiary ? formatAmount(row.amountPerBeneficiary) : "-"}</td>
                     </tr>
                   ))
                 )}
