@@ -511,7 +511,7 @@ function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lan
     <div className="min-w-0 border border-border bg-surface p-4 space-y-2">
       <div className="flex flex-col gap-1 font-sans text-sm sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 break-words text-foreground/60">
-          Program <span>{shortenHex(programId)}</span>{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
+          Program <span>{shortenHex(programId)}</span><CopyButton value={programId} what="Program ID" lang={lang} />{!active && (lang === "id" ? " (nonaktif)" : " (inactive)")}
         </span>
         <span className="break-words tabular-nums sm:text-right">
           {formatAmount(totalDisbursed.toString())} / {formatAmount(totalCap.toString())}
@@ -521,6 +521,72 @@ function ProgramSummaryCard({ programId, lang }: { programId: `0x${string}`; lan
         <div className="h-1.5 bg-accent-verified" style={{ width: `${pct}%` }} />
       </div>
     </div>
+  );
+}
+
+function CopyButton({ value, what, lang }: { value: string; what: string; lang: Language }) {
+  const [state, setState] = useState<"idle" | "ok" | "fail">("idle");
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value);
+      setState("ok");
+    } catch {
+      setState("fail");
+    }
+    setTimeout(() => setState("idle"), 1500);
+  }
+  const base = lang === "id" ? `Salin ${what}` : `Copy ${what}`;
+  const doneText = lang === "id" ? "Disalin" : "Copied";
+  const failText = lang === "id" ? "Gagal menyalin" : "Copy failed";
+  const title = state === "ok" ? doneText : state === "fail" ? failText : base;
+  const tone =
+    state === "ok" ? "text-accent-verified"
+    : state === "fail" ? "text-accent-rejected"
+    : "text-foreground/50 hover:text-foreground";
+  return (
+    <span className="-my-1 inline-flex align-middle">
+      <button
+        type="button"
+        onClick={copy}
+        aria-label={base}
+        title={title}
+        className={`ml-1.5 inline-flex h-6 w-6 items-center justify-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-verified ${tone}`}
+      >
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
+          {state === "ok" ? (
+            <path d="M4 12l5 5L20 6" />
+          ) : state === "fail" ? (
+            <path d="M6 6l12 12M18 6L6 18" />
+          ) : (
+            <>
+              <rect x="9" y="9" width="11" height="11" />
+              <path d="M5 15V5h10" />
+            </>
+          )}
+        </svg>
+      </button>
+      <span className="sr-only" role="status">{state === "ok" ? doneText : state === "fail" ? failText : ""}</span>
+    </span>
+  );
+}
+
+function ExplorerLink({ href, label, lang }: { href: string; label?: string; lang: Language }) {
+  const text = label ?? (lang === "id" ? "Lihat di BscScan" : "View on BscScan");
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={text}
+      title={text}
+      className="-my-1 ml-0.5 inline-flex h-6 w-6 items-center justify-center align-middle text-foreground/50 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-verified"
+    >
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
+        <path d="M14 4h6v6" />
+        <path d="M20 4L10 14" />
+        <path d="M18 14v6H4V6h6" />
+      </svg>
+    </a>
   );
 }
 
@@ -574,8 +640,8 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
       </div>
 
       <div className="space-y-1 text-sm text-foreground/70 break-all">
-        <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}</div>
-        {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}</div>}
+        <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}<CopyButton value={row.idHash} what="ID Hash" lang={lang} /></div>
+        {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}<CopyButton value={String(onchain[1])} what="Wallet" lang={lang} /><ExplorerLink href={`https://testnet.bscscan.com/address/${onchain[1]}`} lang={lang} /></div>}
       </div>
 
       {proof && (
@@ -605,18 +671,14 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
           → {lang === "id" ? "Diajukan" : "Submitted"}
           {source === "live" && onchain?.[5] ? `: ${formatTimestamp(Number(onchain[5]))}` : ""}{" "}
           {row.registeredTxHash && (
-            <a href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
-              ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
-            </a>
+            <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.registeredTxHash}`} lang={lang} />
           )}
         </li>
         {row.approvedAt && (
           <li>
             → {lang === "id" ? "Disetujui" : "Approved"}: {formatTimestamp(row.approvedAt)}{" "}
             {row.approvedTxHash && (
-              <a href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
-                ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
-              </a>
+              <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.approvedTxHash}`} lang={lang} />
             )}
           </li>
         )}
@@ -624,18 +686,14 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
           <li>
             → {lang === "id" ? "Dana Cair" : "Disbursed"}: {formatTimestamp(row.disbursedAt)}{" "}
             {row.disbursedTxHash && (
-              <a href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} target="_blank" rel="noopener noreferrer" className="underline text-accent-verified hover:text-foreground">
-                ({lang === "id" ? "lihat di BscScan" : "view on BscScan"})
-              </a>
+              <ExplorerLink href={`https://testnet.bscscan.com/tx/${row.disbursedTxHash}`} lang={lang} />
             )}
           </li>
         )}
         {row.disputes.map((d, i) => (
           <li key={i} className="text-accent-rejected">
             → {lang === "id" ? "Disanggah oleh" : "Objected by"} {shortenHex(d.pelapor)} ({formatTimestamp(d.timestamp)}): {d.alasanURI}{" "}
-            <a href={`https://testnet.bscscan.com/tx/${d.txHash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
-              ({lang === "id" ? "verifikasi" : "verify"})
-            </a>
+            <ExplorerLink href={`https://testnet.bscscan.com/tx/${d.txHash}`} label={lang === "id" ? "Verifikasi di BscScan" : "Verify on BscScan"} lang={lang} />
           </li>
         ))}
       </ol>
@@ -939,6 +997,34 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+
+          <div className="space-y-2 text-sm">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">
+              {lang === "id" ? "Verifikasi di blockchain" : "Verify on-chain"}
+            </h3>
+            <p className="max-w-2xl text-foreground/70">
+              {lang === "id"
+                ? "Kedua kontrak terverifikasi di BscScan Testnet, jadi kode dan riwayat transaksinya bisa dibaca langsung."
+                : "Both contracts are verified on BscScan Testnet, so their code and transaction history can be read directly."}
+            </p>
+            <div className="space-y-1 text-foreground/70 break-all">
+              {REGISTRY && (
+                <div>
+                  BeneficiaryRegistry: {REGISTRY}
+                  <CopyButton value={REGISTRY} what="BeneficiaryRegistry" lang={lang} />
+                  <ExplorerLink href={`https://testnet.bscscan.com/address/${REGISTRY}`} lang={lang} />
+                </div>
+              )}
+              {POOL && (
+                <div>
+                  DisbursementPool: {POOL}
+                  <CopyButton value={POOL} what="DisbursementPool" lang={lang} />
+                  <ExplorerLink href={`https://testnet.bscscan.com/address/${POOL}`} lang={lang} />
+                </div>
+              )}
+            </div>
+          </div>
+
           </div>
 
           {selected && (() => {
