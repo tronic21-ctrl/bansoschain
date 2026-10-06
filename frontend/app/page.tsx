@@ -609,10 +609,14 @@ function TimelineItem({
 }) {
   const reject = tone === "reject";
   return (
-    <li className={reject ? "border-l-2 border-accent-rejected pl-3" : ""}>
+    <li className="relative pl-5">
+      <span
+        aria-hidden="true"
+        className={`absolute -left-[4px] top-1.5 h-2 w-2 ${reject ? "bg-accent-rejected" : "bg-foreground"}`}
+      />
       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
         <span className={`font-medium ${reject ? "text-accent-rejected" : "text-foreground"}`}>{label}</span>
-        {date && <span className="text-foreground/60">{date}</span>}
+        {date && <span className="text-xs tabular-nums text-foreground/60">{date}</span>}
         {txHash && <ExplorerLink href={`https://testnet.bscscan.com/tx/${txHash}`} label={linkLabel} lang={lang} />}
       </div>
       {children && <div className="mt-1 space-y-0.5 break-words text-foreground/80">{children}</div>}
@@ -670,8 +674,8 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
       </div>
 
       <div className="space-y-1 text-xs text-foreground/70 break-all sm:text-sm">
-        <div>{lang === "id" ? "ID Hash" : "ID Hash"}: {row.idHash}<CopyButton value={row.idHash} what="ID Hash" lang={lang} /></div>
-        {onchain?.[1] && <div>{lang === "id" ? "Wallet" : "Wallet"}: {onchain[1]}<CopyButton value={String(onchain[1])} what="Wallet" lang={lang} /><ExplorerLink href={`https://testnet.bscscan.com/address/${onchain[1]}`} lang={lang} /></div>}
+        <div><span className="block text-xs text-foreground/60 sm:inline sm:text-sm sm:text-foreground/70">ID Hash:</span> {row.idHash}<CopyButton value={row.idHash} what="ID Hash" lang={lang} /></div>
+        {onchain?.[1] && <div><span className="block text-xs text-foreground/60 sm:inline sm:text-sm sm:text-foreground/70">Wallet:</span> {onchain[1]}<CopyButton value={String(onchain[1])} what="Wallet" lang={lang} /><ExplorerLink href={`https://testnet.bscscan.com/address/${onchain[1]}`} lang={lang} /></div>}
       </div>
 
       {proof && (
@@ -696,7 +700,7 @@ function DetailPanel({ row, onClose, lang, source }: { row: AuditRow; onClose: (
         </div>
       )}
 
-      <ol className="space-y-3 text-sm">
+      <ol className="ml-1 space-y-4 border-l border-border text-sm">
         <TimelineItem
           label={lang === "id" ? "Diajukan" : "Submitted"}
           date={source === "live" && onchain?.[5] ? formatTimestamp(Number(onchain[5])) : undefined}
@@ -1047,14 +1051,14 @@ export default function Home() {
             <div className="space-y-1 text-foreground/70 break-all">
               {REGISTRY && (
                 <div>
-                  BeneficiaryRegistry: {REGISTRY}
+                  <span className="block text-xs text-foreground/60 sm:inline sm:text-sm sm:text-foreground/70">BeneficiaryRegistry:</span> {REGISTRY}
                   <CopyButton value={REGISTRY} what="BeneficiaryRegistry" lang={lang} />
                   <ExplorerLink href={`https://testnet.bscscan.com/address/${REGISTRY}`} lang={lang} />
                 </div>
               )}
               {POOL && (
                 <div>
-                  DisbursementPool: {POOL}
+                  <span className="block text-xs text-foreground/60 sm:inline sm:text-sm sm:text-foreground/70">DisbursementPool:</span> {POOL}
                   <CopyButton value={POOL} what="DisbursementPool" lang={lang} />
                   <ExplorerLink href={`https://testnet.bscscan.com/address/${POOL}`} lang={lang} />
                 </div>
