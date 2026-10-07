@@ -325,8 +325,8 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
             <h3 className="font-mono text-xs uppercase tracking-wider text-foreground/50">{lang === "id" ? "Tentang prototype" : "About the prototype"}</h3>
             <p className="text-base font-sans">
               {lang === "id"
-                ? "BanSOSChain adalah gambaran masa depan penyaluran bantuan sosial. Setiap proses dari pengajuan hingga pencairan dana dicatat permanen di sistem dan bisa diawasi oleh siapa saja, membuat penyimpangan lebih sulit disembunyikan."
-                : "BanSOSChain is a vision of the future of social assistance. Every step, from application to disbursement, is permanently recorded and can be monitored by anyone, making misuse harder to hide."}
+                ? "BanSOSChain adalah jejak audit publik untuk bantuan sosial di Indonesia. Setiap tahap, dari pengajuan hingga pencairan, dicatat on-chain dan bisa diperiksa siapa saja, sehingga penyimpangan lebih sulit disembunyikan."
+                : "BanSOSChain is a public audit trail for social aid in Indonesia. Every step, from application to disbursement, is recorded on-chain and can be checked by anyone, so misuse is harder to hide."}
             </p>
             <p className="bg-accent-warning p-3 text-white">
               {lang === "id"
@@ -373,11 +373,11 @@ function PrototypeInfo({ onClose, lang }: { onClose: () => void; lang: Language 
             <dl className="grid gap-4 sm:grid-cols-2">
               {[
                 lang === "id"
-                  ? ["Transparan & Anti-Korupsi", "Seluruh aliran dana (on-chain) dikunci permanen. Tidak ada data yang bisa diam-diam dihapus atau diubah oknum."]
-                  : ["Transparent & Anti-Corruption", "All fund flows (on-chain) are permanently locked. No data can be secretly deleted or altered by bad actors."],
+                  ? ["Transparan Sejak Dirancang", "Setiap langkah dicatat on-chain. Catatan yang sudah tersimpan tidak bisa dihapus atau diubah diam-diam."]
+                  : ["Transparent by Design", "Every step is recorded on-chain. Recorded entries cannot be deleted or quietly altered."],
                 lang === "id"
-                  ? ["Identitas Terlindungi", "Nama penerima ditampilkan tersamar (seperti di cek bansos resmi), dan setiap penerima dikenali di rantai lewat kode acak (ID Hash), bukan NIK langsung."]
-                  : ["Identity Protection", "Recipient names are shown masked (like the official aid-checking portal), and each recipient is identified on-chain by a random code (ID Hash), not by their national ID directly."],
+                  ? ["Identitas Terlindungi", "Nama penerima ditampilkan tersamar (seperti di cek bansos resmi), dan setiap penerima dikenali di rantai lewat ID Hash, bukan NIK langsung."]
+                  : ["Identity Protection", "Recipient names are shown masked (like the official aid-checking portal), and each recipient is identified on-chain by an ID Hash, not by their national ID (NIK)."],
                 lang === "id"
                   ? ["Langsung ke Penerima", "Dana tidak mengendap di pihak ketiga. Sistem mentransfer dana digital langsung ke akun (wallet) penerima."]
                   : ["Direct to Recipient", "Funds do not sit with third parties. The system transfers digital funds directly to the recipient's account (wallet)."],
@@ -814,6 +814,7 @@ export default function Home() {
     useEffect(() => {
     const storedLanguage = window.localStorage.getItem("bansoschain-language");
     if (storedLanguage === "id" || storedLanguage === "en") setLang(storedLanguage);
+    else if (!window.navigator.language.toLowerCase().startsWith("id")) setLang("en");
 
     const handleLanguageChange = (event: Event) => {
       const language = (event as CustomEvent<Language>).detail;
